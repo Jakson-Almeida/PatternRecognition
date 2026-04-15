@@ -1,3 +1,81 @@
-% Document Latex file
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
 
-Usando o método euclidiano. A reta que passa por [0, 0] e [3, 3] tem o ponto central em [1.5, 1.5]. Daí se passa uma outra reta a qual é ortogonal à primeira e essa é a a funcão discreminante para as duas classes baseada na regra de Bayes a qual tem a forma de uma função linear de primeira ordem. Essa abordagem só é possível porque as classes C1 e C2 tem matrizes de covariância iguais e são da forma identidade.
+\title{Primeiro Trabalho de Reconhecimento de Padr\~oes}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Quest\~ao 1}
+Obter a fun\c{c}\~ao discriminante baseada na regra de Bayes para um problema de classifica\c{c}\~ao com duas classes equiprov\'aveis:
+\[
+C_1:\; \mathcal{N}(\mu_1,\Sigma),\qquad
+\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\qquad
+\Sigma=I
+\]
+\[
+C_2:\; \mathcal{N}(\mu_2,\Sigma),\qquad
+\mu_2=\begin{bmatrix}3\\3\end{bmatrix},\qquad
+\Sigma=I
+\]
+com \(P(C_1)=P(C_2)=\frac12\).
+
+\section*{Solu\c{c}\~ao}
+Para classes Gaussianas com mesma matriz de covari\^ancia, o discriminante de Bayes para a classe \(C_i\) pode ser escrito como
+\[
+g_i(x)=x^\top\Sigma^{-1}\mu_i-\frac12\mu_i^\top\Sigma^{-1}\mu_i+\ln P(C_i).
+\]
+Como \(\Sigma=I\), temos \(\Sigma^{-1}=I\). Logo:
+\[
+g_i(x)=x^\top\mu_i-\frac12\mu_i^\top\mu_i+\ln P(C_i).
+\]
+
+A fronteira de decis\~ao entre \(C_1\) e \(C_2\) \'e dada por \(g_1(x)=g_2(x)\), ou seja:
+\[
+(\mu_1-\mu_2)^\top x
+-\frac12\left(\mu_1^\top\mu_1-\mu_2^\top\mu_2\right)
++\ln\frac{P(C_1)}{P(C_2)}=0.
+\]
+
+Como as classes s\~ao equiprov\'aveis, \(\ln\frac{P(C_1)}{P(C_2)}=0\). Substituindo
+\[
+\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\quad
+\mu_2=\begin{bmatrix}3\\3\end{bmatrix},
+\]
+obtemos
+\[
+(-3,-3)\,x-\frac12(0-18)=0
+\;\Longrightarrow\;
+-3x_1-3x_2+9=0
+\;\Longrightarrow\;
+x_1+x_2=3.
+\]
+
+Assim, uma fun\c{c}\~ao discriminante equivalente \'e
+\[
+g(x)=x_1+x_2-3.
+\]
+Regra de decis\~ao:
+\[
+\begin{cases}
+g(x)<0 \Rightarrow x \in C_1,\\
+g(x)>0 \Rightarrow x \in C_2.
+\end{cases}
+\]
+
+\paragraph{Interpreta\c{c}\~ao geom\'etrica.}
+A fronteira \(x_1+x_2=3\) \'e uma reta com normal \((1,1)\), ortogonal ao vetor \(\mu_2-\mu_1=(3,3)\), e que passa pelo ponto m\'edio entre as m\'edias:
+\[
+\frac{\mu_1+\mu_2}{2}=\begin{bmatrix}1.5\\1.5\end{bmatrix}.
+\]
+Isso confirma o resultado esperado para duas Gaussianas com covari\^ancias iguais.
+
+\end{document}
