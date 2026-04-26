@@ -3,6 +3,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[brazil]{babel}
 \usepackage{amsmath,amssymb}
+\usepackage{booktabs}
 \usepackage{geometry}
 \geometry{margin=2.5cm}
 
@@ -115,5 +116,88 @@ A fronteira \(x_1+x_2=3\) \'e uma reta com normal \((1,1)\), ortogonal ao vetor 
 \frac{\mu_1+\mu_2}{2}=\begin{bmatrix}1.5\\1.5\end{bmatrix}.
 \]
 Isso confirma o resultado esperado para duas Gaussianas com covari\^ancias iguais.
+
+\section*{Quest\~oes 2 a 7 --- Configura\c{c}\~ao original}
+Nas quest\~oes seguintes, repetimos o experimento num\'erico descrito no enunciado do trabalho, com duas classes Gaussianas equiprov\'aveis e mesma matriz de covari\^ancia $\Sigma$:
+\[
+C_1:\;\mathcal{N}(\mu_1,\Sigma),\quad
+\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\quad
+C_2:\;\mathcal{N}(\mu_2,\Sigma),\quad
+\mu_2=\begin{bmatrix}3\\3\end{bmatrix},\quad
+\Sigma=I.
+\]
+Foram geradas $n=1000$ amostras por classe para treinamento (quest\~ao~2) e outras $n=1000$ por classe para teste (quest\~ao~4), com sementes fixadas de forma reproduz\'ivel. A semente global do c\'odigo foi $\texttt{MASTER\_SEED}=2026$, o que produziu semente de treinamento $426$ e semente de teste $89$.
+
+\subsection*{Quest\~ao 2}
+Os pontos das duas classes foram plotados com o mesmo estilo do notebook de aula: classe~1 em \texttt{r+}, classe~2 em \texttt{b.}, e a superf\'icie de separa\c{c}\~ao em pontos verdes (\texttt{g.}), sem legenda, eixos \emph{Par\^ametro~1} e \emph{Par\^ametro~2}, grade e t\'itulo. A superf\'icie \'otima de Bayes \'e linear porque $\Sigma_1=\Sigma_2$. A regra linear obtida numericamente coincide com a teoria:
+\[
+h_{\mathrm{Bayes}}(\mathbf{x})=3x_1+3x_2-9.
+\]
+
+\subsection*{Quest\~oes 3 e 4 --- Erro de Bayes}
+O erro te\'orico de Bayes para duas Gaussianas com mesma covari\^ancia e priors iguais foi calculado em forma fechada e conferido pela cauda univariada ao longo da normal \`a fronteira; ambos coincidiram em $0{,}0169$. Os erros emp\'iricos (propor\c{c}\~ao de erros de classifica\c{c}\~ao) foram $0{,}0155$ no conjunto de treinamento da quest\~ao~2 e $0{,}0120$ no conjunto de teste da quest\~ao~4.
+
+\subsection*{Quest\~ao 5 --- Classificador Euclidiano}
+Usando as m\'edias amostrais do treinamento, a fronteira continua linear, com
+\[
+h_{\mathrm{Euclidiano}}(\mathbf{x})\approx 2{,}9803\,x_1+2{,}9997\,x_2-9{,}0472.
+\]
+Como $\Sigma=I$, espera-se forte concord\^ancia com a regra de Bayes; de fato, o erro te\'orico avaliado para essa reta estimada foi $0{,}0170$ e o erro no teste $0{,}0125$.
+
+\subsection*{Quest\~ao 6 --- Bayes ing\^enuo n\~ao param\'etrico}
+As densidades marginais em cada dimens\~ao foram estimadas por KDE Gaussiano (fun\c{c}\~ao \texttt{gaussian\_kde} do SciPy); a decis\~ao usa o log-posterior produto das marginais. O erro no teste foi $0{,}0155$. Nesta configura\c{c}\~ao, as vari\'aveis s\~ao independentes sob o modelo gerador ($\Sigma$ diagonal), logo o ing\^enuo aproxima bem o \'otimo.
+
+\subsection*{Quest\~ao 7 --- $k$-NN}
+Foram treinados $k$-NN com $k\in\{1,5,11\}$. Os erros no conjunto de teste foram $0{,}0245$, $0{,}0170$ e $0{,}0145$, respectivamente. As matrizes de confus\~ao (linhas = r\'otulo verdadeiro $C_1,C_2$) foram, para $k=1$: $\begin{bmatrix}980&20\\ 29&971\end{bmatrix}$; para $k=5$: $\begin{bmatrix}985&15\\ 19&981\end{bmatrix}$; para $k=11$: $\begin{bmatrix}987&13\\ 16&984\end{bmatrix}$. O valor $k=11$ apresentou o menor erro neste sorteio.
+
+\begin{table}[h]
+\centering
+\caption{Resumo dos erros no teste --- configura\c{c}\~ao original ($\mu_1=(0,0)^\top$, $\mu_2=(3,3)^\top$, $\Sigma=I$).}
+\begin{tabular}{lcc}
+\toprule
+Classificador & Erro te\'orico & Erro teste \\
+\midrule
+Bayes \'otimo & $0{,}0169$ & $0{,}0120$ \\
+Euclidiano (m\'edias estimadas) & $0{,}0170$ & $0{,}0125$ \\
+Bayes ing\^enuo KDE & --- & $0{,}0155$ \\
+$k$-NN, $k=1$ & --- & $0{,}0245$ \\
+$k$-NN, $k=5$ & --- & $0{,}0170$ \\
+$k$-NN, $k=11$ & --- & $0{,}0145$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Quest\~ao 8 --- Nova configura\c{c}\~ao}
+Repetiu-se o mesmo procedimento para
+\[
+\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\quad
+\mu_2=\begin{bmatrix}2\\0\end{bmatrix},\quad
+\Sigma=\begin{bmatrix}1&0{,}6\\0{,}6&1\end{bmatrix},
+\]
+mantendo as mesmas sementes ($426$ e $89$) e $n=1000$ por classe. A fronteira de Bayes permanece linear, com coeficientes num\'ericos
+\[
+h_{\mathrm{Bayes}}(\mathbf{x})=3{,}1250\,x_1-1{,}8750\,x_2-3{,}1250,
+\]
+consistentes com $\Sigma^{-1}(\mu_2-\mu_1)$ ap\'os normaliza\c{c}\~ao da reta de decis\~ao. O erro te\'orico de Bayes subiu para $0{,}1056$; no teste, $0{,}0990$. O classificador Euclidiano com m\'edias amostrais deixa de alinhar-se ao \'otimo de Mahalanobis: erro te\'orico da reta estimada $0{,}1599$ e erro no teste $0{,}1645$. O Bayes ing\^enuo por KDE marginal teve erro $0{,}1620$, penalizado pela suposi\c{c}\~ao de independ\^encia quando $\Sigma$ n\~ao \'e diagonal. Para $k$-NN, os erros no teste foram $0{,}1430$ ($k=1$), $0{,}1060$ ($k=5$) e $0{,}0960$ ($k=11$); novamente $k$ maior suaviza a fronteira e melhora a generaliza\c{c}\~ao neste cen\'ario.
+
+\begin{table}[h]
+\centering
+\caption{Resumo dos erros no teste --- quest\~ao~8 ($\mu_1=(0,0)^\top$, $\mu_2=(2,0)^\top$, $\Sigma$ com correla\c{c}\~ao $0{,}6$).}
+\begin{tabular}{lcc}
+\toprule
+Classificador & Erro te\'orico & Erro teste \\
+\midrule
+Bayes \'otimo & $0{,}1056$ & $0{,}0990$ \\
+Euclidiano (m\'edias estimadas) & $0{,}1599$ & $0{,}1645$ \\
+Bayes ing\^enuo KDE & --- & $0{,}1620$ \\
+$k$-NN, $k=1$ & --- & $0{,}1430$ \\
+$k$-NN, $k=5$ & --- & $0{,}1060$ \\
+$k$-NN, $k=11$ & --- & $0{,}0960$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{S\'intese.}
+Na configura\c{c}\~ao original, classes bem separadas e $\Sigma=I$ fazem Bayes, Euclidiano e ing\^enuo performarem de modo semelhante, com erros baixos. Na quest\~ao~8, maior sobreposi\c{c}\~ao geom\'etrica e correla\c{c}\~ao aumentam o erro de Bayes; o Euclidiano ing\^enuo em rela\c{c}\~ao \`as m\'edias amostrais piora por n\~ao usar $\Sigma^{-1}$, e o Bayes ing\^enuo por marginais perde por modelar incorretamente a depend\^encia. O $k$-NN com $k$ moderado a grande aproxima fronteiras flex\'iveis e compete com o \'otimo quando $k=11$ neste experimento.
 
 \end{document}
