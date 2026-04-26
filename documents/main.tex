@@ -29,45 +29,83 @@ C_2:\; \mathcal{N}(\mu_2,\Sigma),\qquad
 com \(P(C_1)=P(C_2)=\frac12\).
 
 \section*{Solu\c{c}\~ao}
-Para classes Gaussianas com mesma matriz de covari\^ancia, o discriminante de Bayes para a classe \(C_i\) pode ser escrito como
+A regra de Bayes escolhe a classe que maximiza a probabilidade a posteriori. Como o logaritmo natural \'e uma fun\c{c}\~ao crescente, podemos usar a fun\c{c}\~ao discriminante
 \[
-g_i(x)=x^\top\Sigma^{-1}\mu_i-\frac12\mu_i^\top\Sigma^{-1}\mu_i+\ln P(C_i).
+g_i(\mathbf{x})=\ln p(\mathbf{x}\mid C_i)+\ln P(C_i).
 \]
-Como \(\Sigma=I\), temos \(\Sigma^{-1}=I\). Logo:
+Para uma Gaussiana multivariada de dimens\~ao \(d\), a densidade condicional \'e
 \[
-g_i(x)=x^\top\mu_i-\frac12\mu_i^\top\mu_i+\ln P(C_i).
+p(\mathbf{x}\mid C_i)=
+\frac{1}{(2\pi)^{d/2}|\Sigma_i|^{1/2}}
+\exp\left[
+-\frac12(\mathbf{x}-\mu_i)^\top\Sigma_i^{-1}(\mathbf{x}-\mu_i)
+\right].
+\]
+Aplicando o logaritmo:
+\[
+g_i(\mathbf{x})=
+-\frac12(\mathbf{x}-\mu_i)^\top\Sigma_i^{-1}(\mathbf{x}-\mu_i)
+-\frac{d}{2}\ln(2\pi)
+-\frac12\ln|\Sigma_i|
++\ln P(C_i).
 \]
 
-A fronteira de decis\~ao entre \(C_1\) e \(C_2\) \'e dada por \(g_1(x)=g_2(x)\), ou seja:
+Neste problema, \(P(C_1)=P(C_2)\), \(\Sigma_1=\Sigma_2=I\), \(\Sigma^{-1}=I\) e \(|\Sigma|=1\). Portanto, os termos \(\ln P(C_i)\), \(-\frac{d}{2}\ln(2\pi)\) e \(-\frac12\ln|\Sigma_i|\) s\~ao iguais para as duas classes e n\~ao alteram a compara\c{c}\~ao entre elas. Assim, basta comparar
 \[
-(\mu_1-\mu_2)^\top x
--\frac12\left(\mu_1^\top\mu_1-\mu_2^\top\mu_2\right)
-+\ln\frac{P(C_1)}{P(C_2)}=0.
+g_i(\mathbf{x})=
+-\frac12(\mathbf{x}-\mu_i)^\top(\mathbf{x}-\mu_i).
+\]
+Expandindo:
+\[
+g_i(\mathbf{x})=
+-\frac12\mathbf{x}^\top\mathbf{x}
++\mu_i^\top\mathbf{x}
+-\frac12\mu_i^\top\mu_i.
+\]
+O termo \(-\frac12\mathbf{x}^\top\mathbf{x}\) tamb\'em \'e comum \`as duas classes. Logo, uma forma equivalente da fun\c{c}\~ao discriminante para cada classe \'e
+\[
+g_i(\mathbf{x})=
+\mu_i^\top\mathbf{x}
+-\frac12\mu_i^\top\mu_i.
 \]
 
-Como as classes s\~ao equiprov\'aveis, \(\ln\frac{P(C_1)}{P(C_2)}=0\). Substituindo
+Substituindo as m\'edias:
 \[
 \mu_1=\begin{bmatrix}0\\0\end{bmatrix},\quad
 \mu_2=\begin{bmatrix}3\\3\end{bmatrix},
 \]
-obtemos
+temos
 \[
-(-3,-3)\,x-\frac12(0-18)=0
-\;\Longrightarrow\;
--3x_1-3x_2+9=0
+g_1(\mathbf{x})=0
+\]
+e
+\[
+g_2(\mathbf{x})
+=
+\begin{bmatrix}3&3\end{bmatrix}
+\begin{bmatrix}x_1\\x_2\end{bmatrix}
+-\frac12
+\begin{bmatrix}3&3\end{bmatrix}
+\begin{bmatrix}3\\3\end{bmatrix}
+=3x_1+3x_2-9.
+\]
+
+A fronteira de decis\~ao ocorre quando \(g_1(\mathbf{x})=g_2(\mathbf{x})\):
+\[
+3x_1+3x_2-9=0
 \;\Longrightarrow\;
 x_1+x_2=3.
 \]
 
-Assim, uma fun\c{c}\~ao discriminante equivalente \'e
+Assim, uma fun\c{c}\~ao discriminante bin\'aria equivalente \'e
 \[
-g(x)=x_1+x_2-3.
+h(\mathbf{x})=x_1+x_2-3.
 \]
 Regra de decis\~ao:
 \[
 \begin{cases}
-g(x)<0 \Rightarrow x \in C_1,\\
-g(x)>0 \Rightarrow x \in C_2.
+h(\mathbf{x})<0 \Rightarrow \mathbf{x} \in C_1,\\
+h(\mathbf{x})>0 \Rightarrow \mathbf{x} \in C_2.
 \end{cases}
 \]
 
