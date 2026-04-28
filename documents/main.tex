@@ -1,203 +1,572 @@
-\documentclass[12pt,a4paper]{article}
+﻿\documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[brazil]{babel}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{graphicx}
 \usepackage{geometry}
+\usepackage{caption}
+\usepackage{placeins}
 \geometry{margin=2.5cm}
 
 \title{Primeiro Trabalho de Reconhecimento de Padr\~oes}
-\author{}
-\date{}
+\author{Jakson da Rocha Almeida}
+\date{27 de abril de 2026}
 
 \begin{document}
 
 \maketitle
 
-\section*{Quest\~ao 1}
-Obter a fun\c{c}\~ao discriminante baseada na regra de Bayes para um problema de classifica\c{c}\~ao com duas classes equiprov\'aveis:
-\[
-C_1:\; \mathcal{N}(\mu_1,\Sigma),\qquad
-\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\qquad
-\Sigma=I
-\]
-\[
-C_2:\; \mathcal{N}(\mu_2,\Sigma),\qquad
-\mu_2=\begin{bmatrix}3\\3\end{bmatrix},\qquad
-\Sigma=I
-\]
-com \(P(C_1)=P(C_2)=\frac12\).
+\noindent\textbf{Organiza\c{c}\~ao do documento.} O trabalho \'e
+resolvido em duas partes. A Parte~I (Quest\~oes 1 a 7) usa a
+configura\c{c}\~ao original do enunciado:
+$\mu_1=(0,0)^\top$, $\mu_2=(3,3)^\top$ e $\Sigma=I$. A Parte~II
+(Quest\~ao~8) refaz cada uma das quest\~oes anteriores para
+$\mu_2=(2,0)^\top$ e $\Sigma=\bigl[\begin{smallmatrix}1&0{,}6\\0{,}6&1\end{smallmatrix}\bigr]$.
+As sementes para os sorteios das Quest\~oes~2 e~4 foram obtidas de uma
+semente-mestre $\mathtt{MASTER\_SEED}=2026$ via duas chamadas
+sucessivas de \texttt{numpy.random.default\_rng(2026).integers(0,501)},
+produzindo $\mathtt{SEED\_Q2}=426$ e $\mathtt{SEED\_Q4}=89$. As mesmas
+sementes s\~ao reutilizadas na Parte~II para permitir compara\c{c}\~ao
+direta entre as duas configura\c{c}\~oes.
 
-\section*{Solu\c{c}\~ao}
-A regra de Bayes escolhe a classe que maximiza a probabilidade a posteriori. Como o logaritmo natural \'e uma fun\c{c}\~ao crescente, podemos usar a fun\c{c}\~ao discriminante
+\begin{center}
+\rule{0.6\linewidth}{0.4pt}\\[2pt]
+\textbf{\large Parte I --- Configura\c{c}\~ao original}\\[-2pt]
+\small$\mu_1=(0,0)^\top,\;\mu_2=(3,3)^\top,\;\Sigma=I$\\
+\rule{0.6\linewidth}{0.4pt}
+\end{center}
+
+% ============================================================
+\section*{Quest\~ao 1 --- Fun\c{c}\~ao discriminante de Bayes}
+
+\paragraph{Enunciado.} Obter a fun\c{c}\~ao discriminante baseada na
+regra de Bayes para um problema de classifica\c{c}\~ao com duas classes
+equiprov\'aveis dadas por
+\[
+C_1:\;\mathcal{N}(\mu_1,\Sigma),\qquad
+C_2:\;\mathcal{N}(\mu_2,\Sigma),\qquad
+P(C_1)=P(C_2)=\tfrac12.
+\]
+
+\paragraph{Solu\c{c}\~ao.} A regra de Bayes escolhe a classe que
+maximiza a probabilidade a posteriori. Como $\ln$ \'e crescente,
+podemos comparar
 \[
 g_i(\mathbf{x})=\ln p(\mathbf{x}\mid C_i)+\ln P(C_i).
 \]
-Para uma Gaussiana multivariada de dimens\~ao \(d\), a densidade condicional \'e
-\[
-p(\mathbf{x}\mid C_i)=
-\frac{1}{(2\pi)^{d/2}|\Sigma_i|^{1/2}}
-\exp\left[
--\frac12(\mathbf{x}-\mu_i)^\top\Sigma_i^{-1}(\mathbf{x}-\mu_i)
-\right].
-\]
-Aplicando o logaritmo:
+Para Gaussianas em dimens\~ao $d$,
 \[
 g_i(\mathbf{x})=
--\frac12(\mathbf{x}-\mu_i)^\top\Sigma_i^{-1}(\mathbf{x}-\mu_i)
--\frac{d}{2}\ln(2\pi)
--\frac12\ln|\Sigma_i|
-+\ln P(C_i).
+-\tfrac12(\mathbf{x}-\mu_i)^\top\Sigma_i^{-1}(\mathbf{x}-\mu_i)
+-\tfrac{d}{2}\ln(2\pi)-\tfrac12\ln|\Sigma_i|+\ln P(C_i).
 \]
-
-Neste problema, \(P(C_1)=P(C_2)\), \(\Sigma_1=\Sigma_2=I\), \(\Sigma^{-1}=I\) e \(|\Sigma|=1\). Portanto, os termos \(\ln P(C_i)\), \(-\frac{d}{2}\ln(2\pi)\) e \(-\frac12\ln|\Sigma_i|\) s\~ao iguais para as duas classes e n\~ao alteram a compara\c{c}\~ao entre elas. Assim, basta comparar
+Como $P(C_1)=P(C_2)$ e $\Sigma_1=\Sigma_2=I$, todos os termos
+constantes em $i$ se cancelam na compara\c{c}\~ao. Resta
+$-\tfrac12\|\mathbf{x}-\mu_i\|^2$; expandindo o quadrado, o termo
+$-\tfrac12\mathbf{x}^\top\mathbf{x}$ tamb\'em \'e comum, de modo que basta comparar
 \[
-g_i(\mathbf{x})=
--\frac12(\mathbf{x}-\mu_i)^\top(\mathbf{x}-\mu_i).
+g_i(\mathbf{x})=\mu_i^\top\mathbf{x}-\tfrac12\mu_i^\top\mu_i.
 \]
-Expandindo:
+Substituindo $\mu_1=\mathbf{0}$ e $\mu_2=(3,3)^\top$,
+$g_1(\mathbf{x})=0$ e $g_2(\mathbf{x})=3x_1+3x_2-9$. A fronteira ocorre quando
+$g_1=g_2$, isto \'e, $3x_1+3x_2-9=0\Leftrightarrow x_1+x_2=3$. A
+fun\c{c}\~ao discriminante bin\'aria \'e
 \[
-g_i(\mathbf{x})=
--\frac12\mathbf{x}^\top\mathbf{x}
-+\mu_i^\top\mathbf{x}
--\frac12\mu_i^\top\mu_i.
-\]
-O termo \(-\frac12\mathbf{x}^\top\mathbf{x}\) tamb\'em \'e comum \`as duas classes. Logo, uma forma equivalente da fun\c{c}\~ao discriminante para cada classe \'e
-\[
-g_i(\mathbf{x})=
-\mu_i^\top\mathbf{x}
--\frac12\mu_i^\top\mu_i.
-\]
-
-Substituindo as m\'edias:
-\[
-\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\quad
-\mu_2=\begin{bmatrix}3\\3\end{bmatrix},
-\]
-temos
-\[
-g_1(\mathbf{x})=0
-\]
-e
-\[
-g_2(\mathbf{x})
-=
-\begin{bmatrix}3&3\end{bmatrix}
-\begin{bmatrix}x_1\\x_2\end{bmatrix}
--\frac12
-\begin{bmatrix}3&3\end{bmatrix}
-\begin{bmatrix}3\\3\end{bmatrix}
-=3x_1+3x_2-9.
-\]
-
-A fronteira de decis\~ao ocorre quando \(g_1(\mathbf{x})=g_2(\mathbf{x})\):
-\[
-3x_1+3x_2-9=0
-\;\Longrightarrow\;
-x_1+x_2=3.
-\]
-
-Assim, uma fun\c{c}\~ao discriminante bin\'aria equivalente \'e
-\[
-h(\mathbf{x})=x_1+x_2-3.
-\]
-Regra de decis\~ao:
-\[
+h(\mathbf{x})=3x_1+3x_2-9,\qquad
 \begin{cases}
-h(\mathbf{x})<0 \Rightarrow \mathbf{x} \in C_1,\\
-h(\mathbf{x})>0 \Rightarrow \mathbf{x} \in C_2.
+h(\mathbf{x})<0\Rightarrow \mathbf{x}\in C_1,\\
+h(\mathbf{x})\ge 0\Rightarrow \mathbf{x}\in C_2.
 \end{cases}
 \]
 
-\paragraph{Interpreta\c{c}\~ao geom\'etrica.}
-A fronteira \(x_1+x_2=3\) \'e uma reta com normal \((1,1)\), ortogonal ao vetor \(\mu_2-\mu_1=(3,3)\), e que passa pelo ponto m\'edio entre as m\'edias:
-\[
-\frac{\mu_1+\mu_2}{2}=\begin{bmatrix}1.5\\1.5\end{bmatrix}.
-\]
-Isso confirma o resultado esperado para duas Gaussianas com covari\^ancias iguais.
+\paragraph{Interpreta\c{c}\~ao geom\'etrica.} A reta $x_1+x_2=3$ tem
+normal $(1,1)^\top$, paralela a $\mu_2-\mu_1=(3,3)^\top$, e passa pelo
+ponto m\'edio $(\mu_1+\mu_2)/2=(1{,}5,1{,}5)^\top$. \'E a mediatriz dos
+centros, como esperado para covari\^ancias iguais e isotr\'opicas.
 
-\section*{Quest\~oes 2 a 7 --- Configura\c{c}\~ao original}
-Nas quest\~oes seguintes, repetimos o experimento num\'erico descrito no enunciado do trabalho, com duas classes Gaussianas equiprov\'aveis e mesma matriz de covari\^ancia $\Sigma$:
-\[
-C_1:\;\mathcal{N}(\mu_1,\Sigma),\quad
-\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\quad
-C_2:\;\mathcal{N}(\mu_2,\Sigma),\quad
-\mu_2=\begin{bmatrix}3\\3\end{bmatrix},\quad
-\Sigma=I.
-\]
-Foram geradas $n=1000$ amostras por classe para treinamento (quest\~ao~2) e outras $n=1000$ por classe para teste (quest\~ao~4), com sementes fixadas de forma reproduz\'ivel. A semente global do c\'odigo foi $\texttt{MASTER\_SEED}=2026$, o que produziu semente de treinamento $426$ e semente de teste $89$.
+% ============================================================
+\section*{Quest\~ao 2 --- Gera\c{c}\~ao do conjunto de treinamento}
 
-\subsection*{Quest\~ao 2}
-Os pontos das duas classes foram plotados com o mesmo estilo do notebook de aula: classe~1 em \texttt{r+}, classe~2 em \texttt{b.}, e a superf\'icie de separa\c{c}\~ao em pontos verdes (\texttt{g.}), sem legenda, eixos \emph{Par\^ametro~1} e \emph{Par\^ametro~2}, grade e t\'itulo. A superf\'icie \'otima de Bayes \'e linear porque $\Sigma_1=\Sigma_2$. A regra linear obtida numericamente coincide com a teoria:
-\[
-h_{\mathrm{Bayes}}(\mathbf{x})=3x_1+3x_2-9.
-\]
+\paragraph{Enunciado.} Sortear um inteiro entre $0$ e $500$ como
+semente, gerar $1000$ amostras de cada classe e plot\'a-las junto com a
+superf\'icie de separa\c{c}\~ao da Quest\~ao~1. Comentar sobre a
+distribui\c{c}\~ao das classes no espa\c{c}o e sobre a forma da
+superf\'icie.
 
-\subsection*{Quest\~oes 3 e 4 --- Erro de Bayes}
-O erro te\'orico de Bayes para duas Gaussianas com mesma covari\^ancia e priors iguais foi calculado em forma fechada e conferido pela cauda univariada ao longo da normal \`a fronteira; ambos coincidiram em $0{,}0169$. Os erros emp\'iricos (propor\c{c}\~ao de erros de classifica\c{c}\~ao) foram $0{,}0155$ no conjunto de treinamento da quest\~ao~2 e $0{,}0120$ no conjunto de teste da quest\~ao~4.
+\paragraph{Solu\c{c}\~ao.} Da semente-mestre 2026 sorteou-se
+$\mathtt{SEED\_Q2}=426$ e geraram-se $1000$ amostras por classe. A
+Figura~\ref{fig:bayes_orig} mostra os pontos ($C_1$ em \texttt{r+},
+$C_2$ em \texttt{b.}) e a fronteira da Quest\~ao~1 em verde. As
+m\'edias amostrais s\~ao
+$\hat{\mu}_1\!\approx\!(-0{,}0007,\,0{,}0363)^\top$ e
+$\hat{\mu}_2\!\approx\!(2{,}9797,\,3{,}0360)^\top$, pr\'oximas de
+$\mu_1$ e $\mu_2$.
 
-\subsection*{Quest\~ao 5 --- Classificador Euclidiano}
-Usando as m\'edias amostrais do treinamento, a fronteira continua linear, com
-\[
-h_{\mathrm{Euclidiano}}(\mathbf{x})\approx 2{,}9803\,x_1+2{,}9997\,x_2-9{,}0472.
-\]
-Como $\Sigma=I$, espera-se forte concord\^ancia com a regra de Bayes; de fato, o erro te\'orico avaliado para essa reta estimada foi $0{,}0170$ e o erro no teste $0{,}0125$.
-
-\subsection*{Quest\~ao 6 --- Bayes ing\^enuo n\~ao param\'etrico}
-As densidades marginais em cada dimens\~ao foram estimadas por KDE Gaussiano (fun\c{c}\~ao \texttt{gaussian\_kde} do SciPy); a decis\~ao usa o log-posterior produto das marginais. O erro no teste foi $0{,}0155$. Nesta configura\c{c}\~ao, as vari\'aveis s\~ao independentes sob o modelo gerador ($\Sigma$ diagonal), logo o ing\^enuo aproxima bem o \'otimo.
-
-\subsection*{Quest\~ao 7 --- $k$-NN}
-Foram treinados $k$-NN com $k\in\{1,5,11\}$. Os erros no conjunto de teste foram $0{,}0245$, $0{,}0170$ e $0{,}0145$, respectivamente. As matrizes de confus\~ao (linhas = r\'otulo verdadeiro $C_1,C_2$) foram, para $k=1$: $\begin{bmatrix}980&20\\ 29&971\end{bmatrix}$; para $k=5$: $\begin{bmatrix}985&15\\ 19&981\end{bmatrix}$; para $k=11$: $\begin{bmatrix}987&13\\ 16&984\end{bmatrix}$. O valor $k=11$ apresentou o menor erro neste sorteio.
-
-\begin{table}[h]
+\begin{figure}[ht]
 \centering
-\caption{Resumo dos erros no teste --- configura\c{c}\~ao original ($\mu_1=(0,0)^\top$, $\mu_2=(3,3)^\top$, $\Sigma=I$).}
-\begin{tabular}{lcc}
+\includegraphics[width=0.55\textwidth]{figures/configuracao_original_q2_q7/bayes.png}
+\caption{Quest\~ao~2: $1000$ amostras por classe ($\mathtt{SEED}=426$)
+com a superf\'icie \'otima de Bayes em verde.}
+\label{fig:bayes_orig}
+\end{figure}
+
+\paragraph{Coment\'ario.} As isodensidades de cada classe s\~ao
+c\'\i rculos ($\Sigma=I$); os centros est\~ao separados por
+$\|\mu_2-\mu_1\|=\sqrt{18}\approx 4{,}24$, isto \'e, mais de quatro
+desvios padr\~ao. As n\'uvens praticamente n\~ao se sobrep\~oem, exceto
+em uma faixa estreita ao longo da fronteira. A superf\'icie de
+separa\c{c}\~ao \'e linear (mediatriz dos centros), exatamente como
+predito pela Quest\~ao~1 para covari\^ancias iguais.
+
+% ============================================================
+\section*{Quest\~ao 3 --- Probabilidade de erro te\'orica e emp\'irica}
+
+\paragraph{Enunciado.} Calcular a probabilidade de erro te\'orica
+(atrav\'es das densidades a posteriori) e estim\'a-la pelo conjunto de
+dados gerado na Quest\~ao~2.
+
+\paragraph{Erro te\'orico.} A regra linear $h(\mathbf{x})=w^\top\mathbf{x}+b$,
+com $w=\mu_2-\mu_1$ e $b=-\tfrac12(\mu_2^\top\mu_2-\mu_1^\top\mu_1)$,
+projeta o problema em uma dimens\~ao. Sob $C_i$, $h$ \'e Gaussiana com
+m\'edia $w^\top\mu_i+b$ e vari\^ancia $w^\top\Sigma w$. Definindo a
+dist\^ancia de Mahalanobis
+$\delta=\sqrt{(\mu_2-\mu_1)^\top\Sigma^{-1}(\mu_2-\mu_1)}$, mostra-se
+que para priors iguais
+\[
+P_e^{\mathrm{Bayes}}=\Phi\!\bigl(-\tfrac{\delta}{2}\bigr).
+\]
+Para a configura\c{c}\~ao original, $\delta=\sqrt{18}$ e
+\[
+P_e^{\mathrm{Bayes}}=\Phi\!\bigl(-\sqrt{18}/2\bigr)=\Phi(-2{,}121)\approx 0{,}0169.
+\]
+
+\paragraph{Erro emp\'irico.} Aplicando $h(\mathbf{x})=3x_1+3x_2-9$ aos $2000$
+pontos da Quest\~ao~2, obteve-se taxa de erro $0{,}0155$ ($31$
+classifica\c{c}\~oes incorretas).
+
+\paragraph{Coment\'ario.} O valor emp\'irico ($0{,}0155$) est\'a a menos
+de meio desvio padr\~ao do te\'orico ($0{,}0169$); o desvio padr\~ao
+amostral \'e $\sqrt{p(1-p)/n}\approx 0{,}003$ para $n=2000$. A
+concord\^ancia confirma a deriva\c{c}\~ao da Quest\~ao~1.
+
+% ============================================================
+\section*{Quest\~ao 4 --- Gera\c{c}\~ao do conjunto de teste}
+
+\paragraph{Enunciado.} Sortear um novo inteiro entre $0$ e $500$ e
+gerar $1000$ amostras de cada classe para teste.
+
+\paragraph{Solu\c{c}\~ao.} A segunda chamada de
+\texttt{integers(0,501)} produziu $\mathtt{SEED\_Q4}=89$, com a qual
+se geraram $1000$ amostras por classe. Esse conjunto \'e usado nas
+Quest\~oes~5--7. Como refer\^encia, o classificador \'otimo de Bayes da
+Quest\~ao~3 atinge $0{,}0120$ neste conjunto de teste.
+
+% ============================================================
+\section*{Quest\~ao 5 --- Classificador Euclidiano}
+
+\paragraph{Enunciado.} Projetar um classificador baseado na dist\^ancia
+Euclidiana \`as m\'edias das classes (estimadas no conjunto de
+treinamento). Achar a fun\c{c}\~ao discriminante te\'orica para esse
+caso e a probabilidade de erro te\'orica; estimar a probabilidade de
+erro pelo conjunto de teste.
+
+\paragraph{Fun\c{c}\~ao discriminante te\'orica.} Decidir pela m\'edia
+mais pr\'oxima equivale a maximizar
+$-\tfrac12\|\mathbf{x}-\mu_i\|^2$. Expandindo e descartando o termo comum
+$-\tfrac12\mathbf{x}^\top\mathbf{x}$,
+\[
+h_{\mathrm{Euc}}(\mathbf{x})=(\mu_2-\mu_1)^\top\mathbf{x}
+-\tfrac12\bigl(\mu_2^\top\mu_2-\mu_1^\top\mu_1\bigr).
+\]
+Para $\mu_1=\mathbf{0}$ e $\mu_2=(3,3)^\top$, isto d\'a
+$h_{\mathrm{Euc}}(\mathbf{x})=3x_1+3x_2-9$, \emph{coincidente com a regra
+de Bayes}, pois $\Sigma=I$.
+
+\paragraph{Erro te\'orico.} Como a regra te\'orica do Euclidiano
+coincide com a de Bayes nesta configura\c{c}\~ao,
+\[
+P_e^{\text{Euc, te\'orico}}=\Phi(-\sqrt{18}/2)\approx 0{,}0169.
+\]
+
+\paragraph{Vers\~ao emp\'irica.} Substituindo $\mu_i$ pelas m\'edias
+amostrais $\hat{\mu}_i$ obtidas no treino,
+\[
+\hat{h}_{\mathrm{Euc}}(\mathbf{x})\approx 2{,}9803\,x_1+2{,}9997\,x_2-9{,}0472.
+\]
+Avaliando-a no conjunto de teste, o erro foi $0{,}0125$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/configuracao_original_q2_q7/euclidiano.png}
+\caption{Quest\~ao~5: classificador Euclidiano com m\'edias amostrais
+sobre o conjunto de treino.}
+\end{figure}
+
+\paragraph{Coment\'ario.} Como $\Sigma=I$, a regra te\'orica do
+Euclidiano \'e igual \`a de Bayes (mesma fronteira, mesmo erro
+$0{,}0169$). A vers\~ao emp\'irica difere apenas pela
+estima\c{c}\~ao das m\'edias com $1000$ pontos: o vetor normal
+$(2{,}98,\,3{,}00)$ \'e quase igual a $(3,3)$, e o erro de teste
+($0{,}0125$) coincide essencialmente com o de Bayes ($0{,}0120$).
+
+% ============================================================
+\section*{Quest\~ao 6 --- Bayes ing\^enuo n\~ao param\'etrico}
+
+\paragraph{Enunciado.} Projetar um classificador de Bayes ing\^enuo
+estimando as densidades de probabilidade das classes de forma n\~ao
+param\'etrica, sobre o conjunto de treinamento. Achar graficamente a
+fun\c{c}\~ao discriminante e estimar o erro pelo conjunto de teste.
+
+\paragraph{Modelo.} O classificador ing\^enuo assume independ\^encia
+das componentes,
+\[
+p(\mathbf{x}\mid C_i)=\prod_{j=1}^{d}p_j(x_j\mid C_i),
+\]
+e cada marginal $p_j(\cdot\mid C_i)$ foi estimada por KDE Gaussiana
+(\texttt{scipy.stats.gaussian\_kde}) com banda de Scott. A regra
+usa o log-posteriori
+$g_i(\mathbf{x})=\ln P(C_i)+\sum_j\ln p_j(x_j\mid C_i)$, e a fronteira
+\'e o conjunto $\{\mathbf{x}:g_2(\mathbf{x})=g_1(\mathbf{x})\}$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/configuracao_original_q2_q7/bayes_ingenuo.png}
+\caption{Quest\~ao~6: superf\'icie de separa\c{c}\~ao do Bayes ing\^enuo
+n\~ao param\'etrico (KDE marginal).}
+\end{figure}
+
+\paragraph{Erro de teste.} $0{,}0155$.
+
+\paragraph{Coment\'ario.} Aqui $\Sigma=I$ \'e diagonal, logo a
+hip\'otese de independ\^encia das componentes \'e \emph{exata}; o
+ing\^enuo recupera o classificador \'otimo a menos do ru\'\i do da
+estima\c{c}\~ao KDE. O erro $0{,}0155$ fica entre o de Bayes
+($0{,}0120$) e o do $k$-NN $k=5$, refletindo essa pequena perda.
+
+% ============================================================
+\section*{Quest\~ao 7 --- $k$-NN}
+
+\paragraph{Enunciado.} Projetar um classificador $k$-NN usando todos os
+vetores do treino, para $k\in\{1,5,11\}$. Achar graficamente a
+fun\c{c}\~ao discriminante para cada caso e estimar o erro pelo
+conjunto de teste.
+
+\paragraph{Solu\c{c}\~ao.} Usou-se \texttt{KNeighborsClassifier} do
+scikit-learn com m\'etrica Euclidiana e voto majorit\'ario. As
+fronteiras est\~ao na Figura~\ref{fig:knn_orig}.
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figures/configuracao_original_q2_q7/knn_k1.png}\\
+\small$k=1$
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figures/configuracao_original_q2_q7/knn_k5.png}\\
+\small$k=5$
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figures/configuracao_original_q2_q7/knn_k11.png}\\
+\small$k=11$
+\end{minipage}
+\caption{Quest\~ao~7: fronteiras de decis\~ao do $k$-NN para
+$k\in\{1,5,11\}$, configura\c{c}\~ao original.}
+\label{fig:knn_orig}
+\end{figure}
+
+\paragraph{Erros e matrizes de confus\~ao.} As matrizes seguem a
+conven\c{c}\~ao
+\[
+\begin{bmatrix}\#(C_1\!\to\! C_1) & \#(C_1\!\to\! C_2)\\ \#(C_2\!\to\! C_1) & \#(C_2\!\to\! C_2)\end{bmatrix}.
+\]
+\begin{center}
+\begin{tabular}{ccc}
 \toprule
-Classificador & Erro te\'orico & Erro teste \\
+$k$ & Erro de teste & Matriz de confus\~ao\\
 \midrule
-Bayes \'otimo & $0{,}0169$ & $0{,}0120$ \\
-Euclidiano (m\'edias estimadas) & $0{,}0170$ & $0{,}0125$ \\
-Bayes ing\^enuo KDE & --- & $0{,}0155$ \\
-$k$-NN, $k=1$ & --- & $0{,}0245$ \\
-$k$-NN, $k=5$ & --- & $0{,}0170$ \\
-$k$-NN, $k=11$ & --- & $0{,}0145$ \\
+$1$ & $0{,}0245$ & $\bigl[\begin{smallmatrix}980 & 20\\ 29 & 971\end{smallmatrix}\bigr]$\\[2pt]
+$5$ & $0{,}0170$ & $\bigl[\begin{smallmatrix}985 & 15\\ 19 & 981\end{smallmatrix}\bigr]$\\[2pt]
+$11$ & $0{,}0145$ & $\bigl[\begin{smallmatrix}987 & 13\\ 16 & 984\end{smallmatrix}\bigr]$\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\section*{Quest\~ao 8 --- Nova configura\c{c}\~ao}
-Repetiu-se o mesmo procedimento para
-\[
-\mu_1=\begin{bmatrix}0\\0\end{bmatrix},\quad
-\mu_2=\begin{bmatrix}2\\0\end{bmatrix},\quad
-\Sigma=\begin{bmatrix}1&0{,}6\\0{,}6&1\end{bmatrix},
-\]
-mantendo as mesmas sementes ($426$ e $89$) e $n=1000$ por classe. A fronteira de Bayes permanece linear, com coeficientes num\'ericos
-\[
-h_{\mathrm{Bayes}}(\mathbf{x})=3{,}1250\,x_1-1{,}8750\,x_2-3{,}1250,
-\]
-consistentes com $\Sigma^{-1}(\mu_2-\mu_1)$ ap\'os normaliza\c{c}\~ao da reta de decis\~ao. O erro te\'orico de Bayes subiu para $0{,}1056$; no teste, $0{,}0990$. O classificador Euclidiano com m\'edias amostrais deixa de alinhar-se ao \'otimo de Mahalanobis: erro te\'orico da reta estimada $0{,}1599$ e erro no teste $0{,}1645$. O Bayes ing\^enuo por KDE marginal teve erro $0{,}1620$, penalizado pela suposi\c{c}\~ao de independ\^encia quando $\Sigma$ n\~ao \'e diagonal. Para $k$-NN, os erros no teste foram $0{,}1430$ ($k=1$), $0{,}1060$ ($k=5$) e $0{,}0960$ ($k=11$); novamente $k$ maior suaviza a fronteira e melhora a generaliza\c{c}\~ao neste cen\'ario.
+\paragraph{Coment\'ario.} Para $k=1$, a fronteira \'e irregular e o
+classificador tem alta vari\^ancia, com erro de teste $0{,}0245$. \`A
+medida que $k$ aumenta, a m\'edia local suaviza a fronteira: $k=11$
+atinge $0{,}0145$, abaixo do erro emp\'irico de Bayes ($0{,}0120$ \'e
+limite assint\'otico te\'orico $0{,}0169$). \'E flutua\c{c}\~ao
+amostral favor\'avel; pelo limite de Cover--Hart,
+$P_{k\text{-NN}}\le 2P_e^{\mathrm{Bayes}}$ para $k$ fixo.
 
-\begin{table}[h]
-\centering
-\caption{Resumo dos erros no teste --- quest\~ao~8 ($\mu_1=(0,0)^\top$, $\mu_2=(2,0)^\top$, $\Sigma$ com correla\c{c}\~ao $0{,}6$).}
+% ============================================================
+\FloatBarrier
+\section*{Resumo da Parte~I}
+
+\begin{center}
 \begin{tabular}{lcc}
 \toprule
-Classificador & Erro te\'orico & Erro teste \\
+Classificador & Erro te\'orico & Erro de teste\\
 \midrule
-Bayes \'otimo & $0{,}1056$ & $0{,}0990$ \\
-Euclidiano (m\'edias estimadas) & $0{,}1599$ & $0{,}1645$ \\
-Bayes ing\^enuo KDE & --- & $0{,}1620$ \\
-$k$-NN, $k=1$ & --- & $0{,}1430$ \\
-$k$-NN, $k=5$ & --- & $0{,}1060$ \\
-$k$-NN, $k=11$ & --- & $0{,}0960$ \\
+Bayes \'otimo & $0{,}0169$ & $0{,}0120$\\
+Euclidiano te\'orico ($\mu$ verdadeiros) & $0{,}0169$ & ---\\
+Euclidiano emp\'irico (m\'edias estimadas) & $0{,}0170$ & $0{,}0125$\\
+Bayes ing\^enuo KDE & --- & $0{,}0155$\\
+$k$-NN, $k=1$ & --- & $0{,}0245$\\
+$k$-NN, $k=5$ & --- & $0{,}0170$\\
+$k$-NN, $k=11$ & --- & $0{,}0145$\\
+\bottomrule
+\end{tabular}\\[2pt]
+\captionof{table}{Configura\c{c}\~ao original ($\mu_1=(0,0)^\top$,
+$\mu_2=(3,3)^\top$, $\Sigma=I$): probabilidades de erro.}
+\end{center}
+
+\begin{center}
+\rule{0.6\linewidth}{0.4pt}\\[2pt]
+\textbf{\large Parte II --- Quest\~ao 8 (nova configura\c{c}\~ao)}\\[-2pt]
+\small$\mu_1=(0,0)^\top,\;\mu_2=(2,0)^\top,\;\Sigma=\bigl[\begin{smallmatrix}1&0{,}6\\0{,}6&1\end{smallmatrix}\bigr]$\\
+\rule{0.6\linewidth}{0.4pt}
+\end{center}
+
+% ============================================================
+\section*{Quest\~ao 8 --- Nova configura\c{c}\~ao das classes}
+
+\paragraph{Enunciado.} Mudar as classes para
+\[
+C_1:\mathcal{N}\!\bigl(\mu_1=\tbinom{0}{0},\Sigma\bigr),\qquad
+C_2:\mathcal{N}\!\bigl(\mu_2=\tbinom{2}{0},\Sigma\bigr),\qquad
+\Sigma=\begin{bmatrix}1 & 0{,}6\\ 0{,}6 & 1\end{bmatrix},
+\]
+e refazer todas as quest\~oes anteriores.\\[4pt]
+As mesmas sementes ($\mathtt{SEED\_Q2}=426$, $\mathtt{SEED\_Q4}=89$) e
+o mesmo $n=1000$ s\~ao usados, alterando apenas $\mu_2$ e $\Sigma$. Cada
+subse\c{c}\~ao a seguir refaz uma das quest\~oes anteriores.
+
+% --- Q1 refeita ---
+\subsection*{Refazendo a Quest\~ao 1: fun\c{c}\~ao discriminante}
+
+A simplifica\c{c}\~ao da Quest\~ao~1 ainda vale para
+$-\tfrac12\mathbf{x}^\top\Sigma^{-1}\mathbf{x}$ (termo comum, pois $\Sigma$ \'e o
+mesmo nas duas classes), o que ainda leva a uma regra linear:
+\[
+h(\mathbf{x})=(\mu_2-\mu_1)^\top\Sigma^{-1}\mathbf{x}-
+\tfrac12\bigl(\mu_2^\top\Sigma^{-1}\mu_2-\mu_1^\top\Sigma^{-1}\mu_1\bigr).
+\]
+Calculando $\Sigma^{-1}$ com $\det\Sigma=1-0{,}36=0{,}64$,
+\[
+\Sigma^{-1}=\frac{1}{0{,}64}\begin{bmatrix}1 & -0{,}6\\ -0{,}6 & 1\end{bmatrix}
+=\begin{bmatrix}1{,}5625 & -0{,}9375\\ -0{,}9375 & 1{,}5625\end{bmatrix}.
+\]
+Como $\mu_1=\mathbf{0}$, $\Sigma^{-1}(\mu_2-\mu_1)=(3{,}125,-1{,}875)^\top$
+e $\tfrac12\mu_2^\top\Sigma^{-1}\mu_2=\tfrac12(2)(3{,}125)=3{,}125$, de
+onde
+\[
+h(\mathbf{x})=3{,}125\,x_1-1{,}875\,x_2-3{,}125,
+\qquad
+\begin{cases}
+h(\mathbf{x})<0\Rightarrow C_1,\\
+h(\mathbf{x})\ge 0\Rightarrow C_2.
+\end{cases}
+\]
+A fronteira ainda \'e uma reta, por\'em \'e ortogonal a
+$\Sigma^{-1}(\mu_2-\mu_1)$ \emph{na geometria de Mahalanobis} --- e n\~ao
+mais ao vetor $\mu_2-\mu_1$ no plano Euclidiano.
+
+% --- Q2 refeita ---
+\subsection*{Refazendo a Quest\~ao 2: gera\c{c}\~ao de dados}
+
+Com $\mathtt{SEED\_Q2}=426$ e a nova distribui\c{c}\~ao, geraram-se
+$1000$ amostras por classe. As m\'edias amostrais s\~ao
+$\hat{\mu}_1\approx(-0{,}0156,\,0{,}0169)^\top$ e
+$\hat{\mu}_2\approx(2{,}0021,\,0{,}0343)^\top$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/questao_8__nova_configuracao/bayes.png}
+\caption{Q8/Q2: $1000$ amostras por classe e superf\'icie \'otima
+$h(\mathbf{x})=3{,}125\,x_1-1{,}875\,x_2-3{,}125$.}
+\end{figure}
+
+\paragraph{Coment\'ario.} As isodensidades agora s\~ao elipses
+inclinadas (correla\c{c}\~ao $0{,}6$) e os centros distam apenas
+$\|\mu_2-\mu_1\|=2$ no plano Euclidiano. Visualmente, h\'a sobreposi\c{c}\~ao
+substancial entre as classes. A superf\'icie tem inclina\c{c}\~ao
+negativa porque o vetor normal $\Sigma^{-1}(\mu_2-\mu_1)=(3{,}125,-1{,}875)^\top$
+tem componente $x_2$ negativa: a correla\c{c}\~ao positiva entre as
+vari\'aveis ``inclina'' a fronteira na dire\c{c}\~ao oposta \`a do
+gradiente de uma simples diferen\c{c}a de m\'edias.
+
+% --- Q3 refeita ---
+\subsection*{Refazendo a Quest\~ao 3: erro de Bayes}
+
+Com a mesma f\'ormula geral
+$P_e^{\mathrm{Bayes}}=\Phi(-\delta/2)$ e
+\[
+\delta^2=(\mu_2-\mu_1)^\top\Sigma^{-1}(\mu_2-\mu_1)
+=(2,0)\binom{3{,}125}{-1{,}875}=6{,}25,\qquad \delta=2{,}5,
+\]
+\[
+P_e^{\mathrm{Bayes}}=\Phi(-1{,}25)\approx 0{,}1056.
+\]
+O erro emp\'irico nos dados da Quest\~ao~2 desta parte foi $0{,}1060$.
+
+\paragraph{Coment\'ario.} O erro \'e $\sim 6$ vezes maior do que na
+configura\c{c}\~ao original ($0{,}1056$ vs.\ $0{,}0169$): as classes
+ficaram mais pr\'oximas e a correla\c{c}\~ao reduz a separabilidade
+\emph{efetiva} (Mahalanobis $2{,}5$ vs.\ Euclidiana $\sqrt{18}\approx 4{,}24$
+do problema original).
+
+% --- Q4 refeita ---
+\subsection*{Refazendo a Quest\~ao 4: conjunto de teste}
+
+Com $\mathtt{SEED\_Q4}=89$ e a nova distribui\c{c}\~ao, gerou-se um
+conjunto de teste com $1000$ amostras por classe. O erro de teste do
+Bayes \'otimo \'e $0{,}0990$.
+
+% --- Q5 refeita ---
+\subsection*{Refazendo a Quest\~ao 5: classificador Euclidiano}
+
+\paragraph{Fun\c{c}\~ao te\'orica.} A regra Euclidiana com m\'edias
+verdadeiras \emph{ignora} $\Sigma$:
+\[
+h_{\mathrm{Euc}}(\mathbf{x})=(\mu_2-\mu_1)^\top\mathbf{x}-\tfrac12(\mu_2^\top\mu_2-\mu_1^\top\mu_1)
+=2x_1-2.
+\]
+A fronteira \'e a reta vertical $x_1=1$.
+
+\paragraph{Erro te\'orico.} Sob $C_i$, $h$ \'e Gaussiana com m\'edia
+$w^\top\mu_i+b$ e vari\^ancia $w^\top\Sigma w$. Aqui $w=(2,0)^\top$ e
+$b=-2$, portanto $w^\top\Sigma w=4$, $s=2$, $m_1=-2$ e $m_2=2$. Logo
+\[
+P_e^{\text{Euc, te\'orico}}
+=\tfrac12\,\bigl[1-\Phi(1)\bigr]+\tfrac12\,\Phi(-1)
+=\Phi(-1)\approx 0{,}1587.
+\]
+\emph{O Euclidiano deixa de ser \'otimo}: o gap $0{,}1587-0{,}1056=0{,}0531$
+\'e o pre\c{c}o de ignorar a correla\c{c}\~ao.
+
+\paragraph{Vers\~ao emp\'irica.} Com as m\'edias amostrais,
+$\hat{h}_{\mathrm{Euc}}(\mathbf{x})\approx 2{,}0177\,x_1+0{,}0174\,x_2-2{,}0045$.
+Erro no teste: $0{,}1645$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/questao_8__nova_configuracao/euclidiano.png}
+\caption{Q8/Q5: classificador Euclidiano emp\'irico (m\'edias amostrais)
+sobre o conjunto de treino da nova configura\c{c}\~ao.}
+\end{figure}
+
+\paragraph{Coment\'ario.} A vers\~ao emp\'irica fica ligeiramente pior
+que a te\'orica (erro $0{,}1645$ vs.\ $0{,}1587$) por causa da
+estima\c{c}\~ao das m\'edias. O fato qualitativo \'e que ambas
+\emph{deixam} cerca de $5$ pontos percentuais sobre a mesa em rela\c{c}\~ao
+ao \'otimo de Bayes ($0{,}1056$).
+
+% --- Q6 refeita ---
+\FloatBarrier
+\subsection*{Refazendo a Quest\~ao 6: Bayes ing\^enuo n\~ao param\'etrico}
+
+Mesmo modelo da Quest\~ao~6: KDE Gaussiana marginal por classe e
+log-posterior produto. Erro de teste: $0{,}1620$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/questao_8__nova_configuracao/bayes_ingenuo.png}
+\caption{Q8/Q6: superf\'icie do Bayes ing\^enuo KDE para a nova
+configura\c{c}\~ao.}
+\end{figure}
+
+\paragraph{Coment\'ario.} A hip\'otese de independ\^encia das marginais
+\'e violada (correla\c{c}\~ao $0{,}6$ entre $x_1$ e $x_2$). Por isso o
+ing\^enuo desempenha mal, na mesma faixa do Euclidiano ($0{,}1620$
+vs.\ $0{,}1645$) e bem acima de Bayes ($0{,}0990$ no teste).
+
+% --- Q7 refeita ---
+\FloatBarrier
+\subsection*{Refazendo a Quest\~ao 7: $k$-NN}
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figures/questao_8__nova_configuracao/knn_k1.png}\\
+\small$k=1$
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figures/questao_8__nova_configuracao/knn_k5.png}\\
+\small$k=5$
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figures/questao_8__nova_configuracao/knn_k11.png}\\
+\small$k=11$
+\end{minipage}
+\caption{Q8/Q7: fronteiras do $k$-NN para $k\in\{1,5,11\}$ na nova
+configura\c{c}\~ao.}
+\end{figure}
+
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+$k$ & Erro de teste & Matriz de confus\~ao\\
+\midrule
+$1$ & $0{,}1430$ & $\bigl[\begin{smallmatrix}856 & 144\\ 142 & 858\end{smallmatrix}\bigr]$\\[2pt]
+$5$ & $0{,}1060$ & $\bigl[\begin{smallmatrix}888 & 112\\ 100 & 900\end{smallmatrix}\bigr]$\\[2pt]
+$11$ & $0{,}0960$ & $\bigl[\begin{smallmatrix}899 & 101\\ 91 & 909\end{smallmatrix}\bigr]$\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\paragraph{S\'intese.}
-Na configura\c{c}\~ao original, classes bem separadas e $\Sigma=I$ fazem Bayes, Euclidiano e ing\^enuo performarem de modo semelhante, com erros baixos. Na quest\~ao~8, maior sobreposi\c{c}\~ao geom\'etrica e correla\c{c}\~ao aumentam o erro de Bayes; o Euclidiano ing\^enuo em rela\c{c}\~ao \`as m\'edias amostrais piora por n\~ao usar $\Sigma^{-1}$, e o Bayes ing\^enuo por marginais perde por modelar incorretamente a depend\^encia. O $k$-NN com $k$ moderado a grande aproxima fronteiras flex\'iveis e compete com o \'otimo quando $k=11$ neste experimento.
+\paragraph{Coment\'ario.} O $k$-NN \'e n\~ao param\'etrico e, por isso,
+\emph{n\~ao} sofre da hip\'otese de independ\^encia que afeta o
+ing\^enuo, nem ignora $\Sigma$ como o Euclidiano. Para $k=11$ obteve-se
+$0{,}0960$, ligeiramente abaixo do erro de Bayes te\'orico
+($0{,}1056$); novamente \'e flutua\c{c}\~ao amostral favor\'avel, pois
+o limite assint\'otico do $k$-NN com $k$ fixo \'e
+$\le 2P_e^{\mathrm{Bayes}}$.
+
+% --- Resumo Q8 ---
+\clearpage
+\subsection*{Resumo da Quest\~ao 8}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Classificador & Erro te\'orico & Erro de teste\\
+\midrule
+Bayes \'otimo & $0{,}1056$ & $0{,}0990$\\
+Euclidiano te\'orico ($\mu$ verdadeiros) & $0{,}1587$ & ---\\
+Euclidiano emp\'irico (m\'edias estimadas) & $0{,}1599$ & $0{,}1645$\\
+Bayes ing\^enuo KDE & --- & $0{,}1620$\\
+$k$-NN, $k=1$ & --- & $0{,}1430$\\
+$k$-NN, $k=5$ & --- & $0{,}1060$\\
+$k$-NN, $k=11$ & --- & $0{,}0960$\\
+\bottomrule
+\end{tabular}\\[2pt]
+\captionof{table}{Quest\~ao~8 (nova configura\c{c}\~ao): probabilidades
+de erro.}
+\end{center}
+
+% ============================================================
+\FloatBarrier
+\section*{S\'\i ntese final}
+
+Comparando as duas configura\c{c}\~oes:
+\begin{itemize}
+\item Com $\Sigma=I$ e centros bem separados (Parte~I), todos os
+classificadores ficam pr\'oximos do \'otimo de Bayes ($\sim 1{,}5\%$),
+inclusive o Euclidiano e o ing\^enuo, porque ambas as suas hip\'oteses
+de simplifica\c{c}\~ao (covari\^ancia identidade e independ\^encia
+marginal) s\~ao satisfeitas.
+\item Com $\Sigma$ correlacionado e centros mais pr\'oximos
+(Parte~II), Bayes (que usa $\Sigma^{-1}$) atinge $\sim 10{,}6\%$
+te\'orico, enquanto Euclidiano e ing\^enuo, que ignoram a
+correla\c{c}\~ao, ficam acima de $15\%$. \'E o pre\c{c}o de modelos com
+hip\'oteses incorretas.
+\item O $k$-NN, n\~ao param\'etrico, recupera a estrutura local em
+ambas as configura\c{c}\~oes; com $k=11$ atinge desempenho
+compar\'avel ao de Bayes nos dois cen\'arios.
+\end{itemize}
 
 \end{document}
+

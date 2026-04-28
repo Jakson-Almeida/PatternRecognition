@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.6.9)  15 APR 2026 16:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.6.9)  27 APR 2026 21:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -148,57 +148,143 @@ LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
-Package: geometry 2020/01/02 v5.9 Page Geometry
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen159
+\lightrulewidth=\dimen160
+\cmidrulewidth=\dimen161
+\belowrulesep=\dimen162
+\belowbottomsep=\dimen163
+\aboverulesep=\dimen164
+\abovetopsep=\dimen165
+\cmidrulesep=\dimen166
+\cmidrulekern=\dimen167
+\defaultaddspace=\dimen168
+\@cmidla=\count297
+\@cmidlb=\count298
+\@aboverulesep=\dimen169
+\@belowrulesep=\dimen170
+\@thisruleclass=\count299
+\@lastruleclass=\count300
+\@thisrulewidth=\dimen171
+)
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
 
 (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks24
 )
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cf
+g
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 106.
+
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2024/04/13 v1.2c Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen172
+\Gin@req@width=\dimen173
+) (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
 (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 
 (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 ))
-\Gm@cnth=\count297
-\Gm@cntv=\count298
-\c@Gm@tempcnt=\count299
-\Gm@bindingoffset=\dimen159
-\Gm@wd@mp=\dimen160
-\Gm@odd@mp=\dimen161
-\Gm@even@mp=\dimen162
-\Gm@layoutwidth=\dimen163
-\Gm@layoutheight=\dimen164
-\Gm@layouthoffset=\dimen165
-\Gm@layoutvoffset=\dimen166
+\Gm@cnth=\count301
+\Gm@cntv=\count302
+\c@Gm@tempcnt=\count303
+\Gm@bindingoffset=\dimen174
+\Gm@wd@mp=\dimen175
+\Gm@odd@mp=\dimen176
+\Gm@even@mp=\dimen177
+\Gm@layoutwidth=\dimen178
+\Gm@layoutheight=\dimen179
+\Gm@layouthoffset=\dimen180
+\Gm@layoutvoffset=\dimen181
 \Gm@dimlist=\toks25
 
 (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
+
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty
+Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
+\caption@tempdima=\dimen182
+\captionmargin=\dimen183
+\caption@leftmargin=\dimen184
+\caption@rightmargin=\dimen185
+\caption@width=\dimen186
+\caption@indent=\dimen187
+\caption@parindent=\dimen188
+\caption@hangindent=\dimen189
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count304
+\c@continuedfloat=\count305
+)
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/placeins\placeins.sty
+Package: placeins 2005/04/18  v 2.2
+)
 (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdft
 ex.def
 File: l3backend-pdftex.def 2025-04-14 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count300
+\l__color_backend_stack_int=\count306
+) (main.aux
+Package babel Info: 'brazil' activates 'portuges' shorthands.
+(babel)             Reported  on input line 5.
 )
-No file main.aux.
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-Package babel Info: 'brazil' activates 'portuges' shorthands.
-(babel)             Reported  on input line 13.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mki
+i
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count307
+\scratchdimen=\dimen190
+\scratchbox=\box55
+\nofMPsegments=\count308
+\nofMParguments=\count309
+\everyMPshowfont=\toks26
+\MPscratchCnt=\count310
+\MPscratchDim=\dimen191
+\MPnumerator=\count311
+\makeMPintoPDFobject=\count312
+\everyMPtoPDFconversion=\toks27
+)
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-ba
+se.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cf
+g
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -233,12 +319,14 @@ Package babel Info: 'brazil' activates 'portuges' shorthands.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 15.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 19.
 
 (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 15.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 19.
 
 
 (C:\Users\DELL\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -248,38 +336,163 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 [1
 
 {C:/Users/DELL/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+<figures/configuracao_original_q2_q7/bayes.png, id=23, 305.943pt x 327.624pt>
+File: figures/configuracao_original_q2_q7/bayes.png Graphic file (type png)
+<use figures/configuracao_original_q2_q7/bayes.png>
+Package pdftex.def Info: figures/configuracao_original_q2_q7/bayes.png  used on
+ input line 109.
+(pdftex.def)             Requested size: 250.38564pt x 268.1335pt.
 
-[2] (main.aux)
+
+[2 <./figures/configuracao_original_q2_q7/bayes.png>]
+
+[3]
+<figures/configuracao_original_q2_q7/euclidiano.png, id=33, 305.943pt x 327.624
+pt>
+File: figures/configuracao_original_q2_q7/euclidiano.png Graphic file (type png
+)
+<use figures/configuracao_original_q2_q7/euclidiano.png>
+Package pdftex.def Info: figures/configuracao_original_q2_q7/euclidiano.png  us
+ed on input line 202.
+(pdftex.def)             Requested size: 250.38564pt x 268.1335pt.
+
+
+[4 <./figures/configuracao_original_q2_q7/euclidiano.png>]
+<figures/configuracao_original_q2_q7/bayes_ingenuo.png, id=39, 305.943pt x 327.
+624pt>
+File: figures/configuracao_original_q2_q7/bayes_ingenuo.png Graphic file (type 
+png)
+<use figures/configuracao_original_q2_q7/bayes_ingenuo.png>
+Package pdftex.def Info: figures/configuracao_original_q2_q7/bayes_ingenuo.png 
+ used on input line 235.
+(pdftex.def)             Requested size: 250.38564pt x 268.1335pt.
+<figures/configuracao_original_q2_q7/knn_k1.png, id=40, 305.943pt x 327.624pt>
+File: figures/configuracao_original_q2_q7/knn_k1.png Graphic file (type png)
+<use figures/configuracao_original_q2_q7/knn_k1.png>
+Package pdftex.def Info: figures/configuracao_original_q2_q7/knn_k1.png  used o
+n input line 263.
+(pdftex.def)             Requested size: 145.68144pt x 156.00294pt.
+<figures/configuracao_original_q2_q7/knn_k5.png, id=41, 305.943pt x 327.624pt>
+File: figures/configuracao_original_q2_q7/knn_k5.png Graphic file (type png)
+<use figures/configuracao_original_q2_q7/knn_k5.png>
+Package pdftex.def Info: figures/configuracao_original_q2_q7/knn_k5.png  used o
+n input line 267.
+(pdftex.def)             Requested size: 145.68144pt x 156.00294pt.
+<figures/configuracao_original_q2_q7/knn_k11.png, id=42, 305.943pt x 327.624pt>
+
+File: figures/configuracao_original_q2_q7/knn_k11.png Graphic file (type png)
+<use figures/configuracao_original_q2_q7/knn_k11.png>
+Package pdftex.def Info: figures/configuracao_original_q2_q7/knn_k11.png  used 
+on input line 271.
+(pdftex.def)             Requested size: 145.68144pt x 156.00294pt.
+
+
+[5 <./figures/configuracao_original_q2_q7/bayes_ingenuo.png>]
+
+[6 <./figures/configuracao_original_q2_q7/knn_k1.png> <./figures/configuracao_o
+riginal_q2_q7/knn_k5.png> <./figures/configuracao_original_q2_q7/knn_k11.png>]
+<figures/questao_8__nova_configuracao/bayes.png, id=53, 349.7065pt x 327.624pt>
+
+File: figures/questao_8__nova_configuracao/bayes.png Graphic file (type png)
+<use figures/questao_8__nova_configuracao/bayes.png>
+Package pdftex.def Info: figures/questao_8__nova_configuracao/bayes.png  used o
+n input line 387.
+(pdftex.def)             Requested size: 250.38564pt x 234.57431pt.
+
+
+[7]
+<figures/questao_8__nova_configuracao/euclidiano.png, id=58, 349.7065pt x 327.6
+24pt>
+File: figures/questao_8__nova_configuracao/euclidiano.png Graphic file (type pn
+g)
+<use figures/questao_8__nova_configuracao/euclidiano.png>
+Package pdftex.def Info: figures/questao_8__nova_configuracao/euclidiano.png  u
+sed on input line 456.
+(pdftex.def)             Requested size: 250.38564pt x 234.57431pt.
+
+
+[8 <./figures/questao_8__nova_configuracao/bayes.png>]
+
+[9 <./figures/questao_8__nova_configuracao/euclidiano.png>]
+<figures/questao_8__nova_configuracao/bayes_ingenuo.png, id=67, 349.7065pt x 32
+7.624pt>
+File: figures/questao_8__nova_configuracao/bayes_ingenuo.png Graphic file (type
+ png)
+<use figures/questao_8__nova_configuracao/bayes_ingenuo.png>
+Package pdftex.def Info: figures/questao_8__nova_configuracao/bayes_ingenuo.png
+  used on input line 476.
+(pdftex.def)             Requested size: 250.38564pt x 234.57431pt.
+<figures/questao_8__nova_configuracao/knn_k1.png, id=68, 349.7065pt x 327.624pt
+>
+File: figures/questao_8__nova_configuracao/knn_k1.png Graphic file (type png)
+<use figures/questao_8__nova_configuracao/knn_k1.png>
+Package pdftex.def Info: figures/questao_8__nova_configuracao/knn_k1.png  used 
+on input line 493.
+(pdftex.def)             Requested size: 145.68144pt x 136.48132pt.
+<figures/questao_8__nova_configuracao/knn_k5.png, id=69, 349.7065pt x 327.624pt
+>
+File: figures/questao_8__nova_configuracao/knn_k5.png Graphic file (type png)
+<use figures/questao_8__nova_configuracao/knn_k5.png>
+Package pdftex.def Info: figures/questao_8__nova_configuracao/knn_k5.png  used 
+on input line 497.
+(pdftex.def)             Requested size: 145.68144pt x 136.48132pt.
+<figures/questao_8__nova_configuracao/knn_k11.png, id=70, 349.7065pt x 327.624p
+t>
+File: figures/questao_8__nova_configuracao/knn_k11.png Graphic file (type png)
+<use figures/questao_8__nova_configuracao/knn_k11.png>
+Package pdftex.def Info: figures/questao_8__nova_configuracao/knn_k11.png  used
+ on input line 501.
+(pdftex.def)             Requested size: 145.68144pt x 136.48132pt.
+
+
+[10 <./figures/questao_8__nova_configuracao/bayes_ingenuo.png> <./figures/quest
+ao_8__nova_configuracao/knn_k1.png> <./figures/questao_8__nova_configuracao/knn
+_k5.png> <./figures/questao_8__nova_configuracao/knn_k11.png>]
+
+[11]
+
+[12
+
+] (main.aux)
  ***********
 LaTeX2e <2025-06-01>
 L3 programming layer <2025-05-26>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 3620 strings out of 468225
- 55344 string characters out of 5433458
- 470372 words of memory out of 5000000
- 32142 multiletter control sequences out of 15000+600000
- 638694 words of font info for 75 fonts, out of 8000000 for 9000
+ 6024 strings out of 468225
+ 101118 string characters out of 5433458
+ 511351 words of memory out of 5000000
+ 34484 multiletter control sequences out of 15000+600000
+ 650011 words of font info for 110 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,7n,65p,223b,216s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1
+ 57i,12n,65p,256b,325s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1
 200.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\
-ecrm1200.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dp
-i600\ecbx1728.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/
-ec/dpi600\ecrm2074.pk><C:/Users/DELL/AppData/Local/Programs/MiKTeX/fonts/type1/
-public/amsfonts/cm/cmex10.pfb><C:/Users/DELL/AppData/Local/Programs/MiKTeX/font
-s/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/DELL/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/DELL/AppData/Local/Progr
-ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/DELL/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/DELL/AppDat
-a/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/DELL/
-AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Use
-rs/DELL/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-
-Output written on main.pdf (2 pages, 115026 bytes).
+ecrm0800.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dp
+i600\ecti1200.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/
+ec/dpi600\ecbx1728.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour/jkna
+ppen/ec/dpi600\ecbx1440.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/ljfour
+/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts/pk/l
+jfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\DELL\AppData\Local\MiKTeX\fonts
+/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\DELL\AppData\Local\MiKTeX\
+fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1440.pk> <C:\Users\DELL\AppData\Local\Mi
+KTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2074.pk><C:/Users/DELL/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/DELL/AppD
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/D
+ELL/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:
+/Users/DELL/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12
+.pfb><C:/Users/DELL/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmmi8.pfb><C:/Users/DELL/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmr10.pfb><C:/Users/DELL/AppData/Local/Programs/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmr12.pfb><C:/Users/DELL/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmr8.pfb><C:/Users/DELL/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/DELL/AppData/Local/Programs/M
+iKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/DELL/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on main.pdf (12 pages, 992104 bytes).
 PDF statistics:
- 153 PDF objects out of 1000 (max. 8388607)
+ 483 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 61 words of extra memory for PDF output out of 10000 (max. 10000000)
 
