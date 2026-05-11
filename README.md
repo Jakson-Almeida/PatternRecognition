@@ -2,12 +2,14 @@
 
 This repository contains study materials and assignments for Pattern Recognition, with a focus on Bayes-based classification.
 
-## Repository Structure
+## Repository structure (por trabalho)
 
-- `Bayes/RecPadroesBayes.ipynb`: Jupyter notebook with experiments and notes.
-- `Bayes/bayes.py`: Python script related to Bayes classification exercises.
-- `documents/main.tex`: LaTeX write-up for assignment solutions.
-- `documents/main.pdf`: Compiled PDF version of the assignment write-up.
+| Trabalho | Notebook(s) | LaTeX / PDF | Figuras |
+|----------|-------------|-------------|---------|
+| **1** | `Bayes/Trabalho1_SolucaoCompleta.ipynb` | `documents/main.tex` → `documents/main.pdf` | `documents/figures/` |
+| **2** | `Bayes/Trabalho2_ReconhecimentoPadroes.ipynb` | *(a criar)* `documents/trabalho2/main.tex` | `documents/trabalho2/figures/` |
+
+Outros ficheiros de estudo: `Bayes/RecPadroesBayes.ipynb`, `Bayes/bayes.py`.
 
 ## Requirements
 
@@ -25,10 +27,11 @@ From the repository root:
 python Bayes/bayes.py
 ```
 
-### Open the notebook
+### Open a notebook
 
 ```bash
-jupyter notebook Bayes/RecPadroesBayes.ipynb
+jupyter notebook Bayes/Trabalho1_SolucaoCompleta.ipynb
+jupyter notebook Bayes/Trabalho2_ReconhecimentoPadroes.ipynb
 ```
 
 ### Compile the LaTeX document
