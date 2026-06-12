@@ -48,7 +48,7 @@ Pontos a considerar antes de treinar os classificadores:
 
 1. Codificação de variáveis categóricas (se usar `german.data`) ou revisão da versão numérica.
 2. Normalização ou padronização (relevante para kNN, SVM e MLP).
-3. Desbalanceamento de classes (~70/30) — métricas estratificadas e, se necessário, `class_weight` ou amostragem.
+3. Desbalanceamento de classes (~70/30) — **SMOTE** no treino de cada fold da CV (após one-hot e padronização), com avaliação estratificada.
 4. Validação cruzada estratificada para comparação justa entre os métodos.
 
 ## Referências
