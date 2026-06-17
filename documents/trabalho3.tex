@@ -8,11 +8,12 @@
 \usepackage{geometry}
 \usepackage{caption}
 \usepackage{placeins}
+\usepackage{hyperref}
 \geometry{margin=2.5cm}
 
 \graphicspath{{trabalho3/figures/}}
 
-\title{Segundo Trabalho de Reconhecimento de Padr\~oes}
+\title{Terceiro Trabalho de Reconhecimento de Padr\~oes}
 \author{Jakson da Rocha Almeida}
 \date{12 de junho de 2026}
 
@@ -22,185 +23,211 @@
 
 \section*{Introdu\c{c}\~ao}
 
-Este relat\'orio documenta a implementa\c{c}\~ao das quest\~oes do segundo trabalho, realizada em Python com \texttt{numpy}, \texttt{matplotlib} e \texttt{scikit-learn}. Os dados seguem duas classes Gaussianas bidimensionais com a mesma matriz de covari\^ancia
-$\boldsymbol{\Sigma}=\bigl[\begin{smallmatrix}1&0{,}6\\0{,}6&1\end{smallmatrix}\bigr]$,
-m\'edias $\boldsymbol{\mu}_1=(0,0)^\top$ e $\boldsymbol{\mu}_2=(2,0)^\top$, e probabilidades \`a priori iguais.
+Este relat\'orio apresenta o terceiro trabalho de reconhecimento de padr\~oes: classifica\c{c}\~ao de risco de cr\'edito com o banco Statlog (German Credit Data), dispon\'{\i}vel no reposit\'orio UCI.
+A implementa\c{c}\~ao foi feita em um notebook Jupyter, em Python, com apoio de bibliotecas usuais de an\'alise de dados e aprendizado de m\'aquina.
 
-Para tornar os sorteios reproduz\'{\i}veis (sem contrariar o enunciado, que pede inteiros em $[0,500]$ como ra\'{\i}zes), utilizamos sementes mestras fixas no notebook:
-\texttt{MASTER\_SEED}=2027 para obter a semente do treino da Quest\~ao~2 ($316$)
-e \texttt{MASTER\_Q34}=2028 para a ``raiz'' das Quest\~oes~3--4, correspondendo ao inteiro $283$ usado na gera\c{c}\~ao do teste.
-As figuras s\~ao gravadas na pasta \texttt{documents/\allowbreak trabalho2/\allowbreak figures/}.
+O enunciado solicita seis classificadores --- m\'{\i}nimos quadrados linear, vizinho mais pr\'oximo (kNN), rede MLP, SVM n\~ao-linear, AdaBoost e floresta aleat\'oria --- comparados por valida\c{c}\~ao cruzada estratificada, com pr\'e-processamento dos dados e avalia\c{c}\~ao conforme as aulas da disciplina.
 
-\section*{Quest\~ao 1 --- Defini\c{c}\~ao das classes}
+Foi adotada semente fixa para reprodutibilidade e $k=5$ parti\c{c}\~oes na valida\c{c}\~ao cruzada. As figuras deste relat\'orio foram geradas a partir dos experimentos descritos no notebook.
 
-Duas classes $C_1$ e $C_2$, cada uma $\mathcal{N}(\boldsymbol{\mu}_i,\boldsymbol{\Sigma})$ com $\boldsymbol{\Sigma}$ compartilhada, conforme o enunciado.
+\section*{Banco de dados}
 
-\section*{Quest\~ao 2 --- Treino e fronteira de Bayes}
+O conjunto cont\'em $n=1000$ pedidos de cr\'edito, cada um com $l=20$ atributos (7 num\'ericos e 13 categ\'oricos) e uma classe bin\'aria:
 
-Sorteou-se o inteiro $316 \in [0,500]$ e geraram-se $n=1000$ amostras por classe.
-Superp\~oe-se a \textbf{fronteira \'otima de Bayes} (linear neste modelo), igual \`a derivada no primeiro trabalho para esta mesma configura\c{c}\~ao:
-\[
-h(\mathbf{x}) = 3{,}125\,x_1 - 1{,}875\,x_2 - 3{,}125 = 0.
-\]
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.62\textwidth]{questao2_treino_fronteira_bayes_t1.png}
-\caption{Quest\~ao~2: treino ($1000$ pontos por classe) e fronteira de Bayes.}
-\label{fig:q2}
-\end{figure}
-
-\section*{Quest\~oes 3 e 4 --- Conjunto de teste}
-
-O inteiro sorteado em $[0,500]$ para a ra\'{\i}z do teste foi $283$.
-Geraram-se novamente $1000$ amostras por classe, independentes do treino, totalizando $2000$ pontos de teste etiquetados ($y\in\{0,1\}$ com $C_1\to 0$, $C_2\to 1$).
-
-\section*{Erro te\'orico de Bayes (refer\^encia para as compara\c{c}\~oes)}
-
-Com covari\^ancia comum e priors iguais, a regra de Bayes \'e linear e a probabilidade de erro vale
-$P_e^{\mathrm{(Bayes)}}=\Phi(-d_M/2)$,
-onde $d_M=\sqrt{(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)^\top\boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)}$.
-Aqui $d_M=2{,}5$, logo $P_e^{\mathrm{(Bayes)}}\approx 0{,}1056$
-aproximadamente $10{,}6\%$.
-
-\section*{Quest\~ao 5 --- Perceptron (treino completo)}
-
-Treinou-se um perceptron linear (\texttt{sklearn.linear\_model.Perceptron}) com todo o conjunto de treino, crit\'erios de parada via \texttt{max\_iter} e \texttt{tol}, e avaliou-se no teste.
-
-\paragraph{Resultado.} Erro emp\'{\i}rico estimado $\hat P_e \approx 0{,}1655$.
-Esperava-se valor \textbf{superior} ao de Bayes: o perceptron minimiza erros por atualiza\c{c}\~oes e n\~ao incorpora explicitamente $\boldsymbol{\Sigma}^{-1}$ nem maximiza verossimilhan\c{c}a das Gaussianas.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.62\textwidth]{questao5_perceptron_teste.png}
-\caption{Quest\~ao~5: perceptron no conjunto de teste e refer\^encia Bayes (verde).}
-\label{fig:q5}
-\end{figure}
-
-\section*{Quest\~oes 6 e 7 --- Perceptron com $50{+}50$ amostras}
-
-Do treino completo, extra\'{\i}ram-se dois blocos disjuntos de $50$ pontos por classe (permuta\c{c}\~oes fixas com \texttt{rng\_sub = np.random.default\_rng(3030)}).
-
-\paragraph{Resultados.}
 \begin{itemize}
-  \item Quest\~ao~6 (primeiro bloco): $\hat P_e \approx 0{,}3565$.
-  \item Quest\~ao~7 (segundo bloco): $\hat P_e \approx 0{,}1080$.
-\end{itemize}
-A dispers\~ao entre os dois blocos \'e grande: com poucos exemplos e overlap das classes, a reta aprendida depende fortemente do subconjunto.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.62\textwidth]{questao6_perceptron_50_teste.png}
-\caption{Quest\~ao~6: perceptron com $50{+}50$ (bloco~1).}
-\label{fig:q6}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.62\textwidth]{questao7_perceptron_50_teste.png}
-\caption{Quest\~ao~7: perceptron com $50{+}50$ (bloco~2).}
-\label{fig:q7}
-\end{figure}
-
-\section*{Quest\~oes 8 a 10 --- M\'{\i}nimos quadrados (pseudoinversa)}
-
-Implementou-se o classificador linear por MQ com matriz aumentada $\tilde{\boldsymbol{X}}=[\mathbf{1}\mid \boldsymbol{X}]$, alvos $\pm 1$ e solu\c{c}\~ao $\hat{\boldsymbol{\theta}}=\tilde{\boldsymbol{X}}^+\boldsymbol{y}$ (\texttt{numpy.linalg.pinv}), classe prevista pela polaridade de $\tilde{\boldsymbol{x}}^\top\hat{\boldsymbol{\theta}}$.
-
-\paragraph{Resultados.}
-\begin{itemize}
-  \item Quest\~ao~8 (treino completo): $\hat{\boldsymbol{\theta}}\approx[-0{,}599,\;0{,}612,\;-0{,}396]^\top$ (formato $[b,w_1,w_2]$), $\hat P_e \approx 0{,}1035$.
-  \item Quest\~ao~9 (mesmo $50{+}50$ da Q6): $\hat P_e \approx 0{,}1110$.
-  \item Quest\~ao~10 (mesmo $50{+}50$ da Q7): $\hat P_e \approx 0{,}1030$.
+  \item classe 1 (good): bom pagador;
+  \item classe 2 (bad): mau pagador (risco de inadimpl\^encia).
 \end{itemize}
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.62\textwidth]{questao8_ls_pinv_treino_completo_teste.png}
-\caption{Quest\~ao~8: MQ com treino completo.}
-\label{fig:q8}
-\end{figure}
+No trabalho, a classe good foi codificada como 0 e a bad como 1, que \'e a classe positiva nas m\'etricas de precis\~ao e revoca\c{c}\~ao.
+A distribui\c{c}\~ao \'e desbalanceada: aproximadamente 700 exemplos good (70\%) e 300 bad (30\%).
+A documenta\c{c}\~ao do conjunto traz uma matriz de custos assim\'etrica: classificar um mau cliente como bom tem custo 5, enquanto o erro inverso tem custo 1. Por isso, al\'em da acur\'acia, vale acompanhar a revoca\c{c}\~ao da classe bad.
+
+Utilizamos a vers\~ao com atributos categ\'oricos em formato simb\'olico, o que exige codifica\c{c}\~ao das vari\'aveis categ\'oricas antes do treinamento.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.48\textwidth]{questao9_ls_pinv_50_teste.png}\quad
-\includegraphics[width=0.48\textwidth]{questao10_ls_pinv_50_teste.png}
-\caption{Quest\~oes~9 e~10: MQ com blocos $50{+}50$.}
-\label{fig:q910}
+\includegraphics[width=0.55\textwidth]{preproc_distribuicao_classes.png}
+\caption{Distribui\c{c}\~ao das classes no German Credit Data (700 good, 300 bad).}
+\label{fig:classes}
 \end{figure}
 
-\section*{Quest\~oes 11 a 13 --- SVM linear com margem suave}
+\section*{Pr\'e-processamento}
 
-Usou-se \texttt{SVC(kernel="linear",\,C=1.0)}. No treino completo h\'a muitos vetores de suporte porque as classes se sobrep\~oem na distribui\c{c}\~ao geradora.
+De acordo com a aula de Pr\'e-processamento e Avalia\c{c}\~ao de Classificadores, foram realizadas as etapas abaixo:
 
-\paragraph{Resultados.}
+\begin{enumerate}
+  \item Caracteriza\c{c}\~ao --- $1000$ inst\^ancias e 20 atributos brutos; ap\'os a codifica\c{c}\~ao categ\'orica, o n\'umero de atributos passa a ser de aproximadamente 61.
+  \item Limpeza --- n\~ao foram encontrados valores faltantes nem inconsist\^encias evidentes.
+  \item Codifica\c{c}\~ao --- vari\'aveis categ\'oricas transformadas em representa\c{c}\~ao bin\'aria (one-hot) para as 13 colunas categ\'oricas.
+  \item Padroniza\c{c}\~ao --- normaliza\c{c}\~ao $z$-score aplicada somente \`as 7 colunas num\'ericas, mantendo as demais sem altera\c{c}\~ao de escala.
+\end{enumerate}
+
+A padroniza\c{c}\~ao \'e importante para kNN, SVM e MLP. No caso do MQ, tamb\'em ajuda a trabalhar com atributos em escalas mais compar\'aveis ap\'os a expans\~ao one-hot.
+
+\section*{Balanceamento com SMOTE}
+
+Dado o desbalanceamento 70/30, adotamos o SMOTE (Synthetic Minority Over-sampling Technique) com $k=5$ vizinhos, aplicado apenas ao conjunto de treino de cada fold da valida\c{c}\~ao cruzada.
+O conjunto de teste de cada fold permanece com a distribui\c{c}\~ao original, para evitar vazamento de informa\c{c}\~ao entre treino e teste.
+
+Em todos os classificadores, a ordem das etapas foi a mesma: pr\'e-processamento, SMOTE no treino e, por fim, o classificador escolhido.
+Sem balanceamento, os modelos tendem a favorecer a classe majorit\'aria (good), o que reduz a revoca\c{c}\~ao de bad.
+
+\section*{Metodologia de avalia\c{c}\~ao}
+
+Utilizamos valida\c{c}\~ao cruzada estratificada com $k=5$ folds, de modo que cada parti\c{c}\~ao de treino e teste preserve a propor\c{c}\~ao 70/30 entre as classes.
+As predi\c{c}\~oes de teste de cada fold foram reunidas para montar a matriz de confus\~ao e a curva ROC.
+
+As m\'etricas seguem a aula de m\'etricas para avalia\c{c}\~ao de classificadores, considerando bad (r\'otulo 1) como classe positiva:
+
 \begin{itemize}
-  \item Quest\~ao~11: $525$ vetores de suporte no total, $\hat P_e \approx 0{,}1005$.
-  \item Quest\~ao~12 (bloco~1): $32$ vetores de suporte, $\hat P_e \approx 0{,}1140$.
-  \item Quest\~ao~13 (bloco~2): $33$ vetores de suporte, $\hat P_e \approx 0{,}1050$.
+  \item Acur\'acia --- fra\c{c}\~ao de acertos no total;
+  \item Precis\~ao --- VP/(VP+FP);
+  \item Revoca\c{c}\~ao (recall ou taxa de verdadeiros positivos) --- VP/(VP+FN);
+  \item F1-score --- m\'edia harm\^onica de precis\~ao e revoca\c{c}\~ao;
+  \item AUC-ROC --- \'area sob a curva ROC, calculada a partir de um escore cont\'{\i}nuo de confian\c{c}a do classificador.
 \end{itemize}
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.62\textwidth]{questao11_svm_linear_teste.png}
-\caption{Quest\~ao~11: SVM linear ($C=1$), treino completo.}
-\label{fig:q11}
-\end{figure}
+Para cada m\'etrica, reportamos a m\'edia e o desvio padr\~ao entre os cinco folds.
+
+\section*{M\'{\i}nimos quadrados linear (MQ)}
+
+O classificador linear por m\'{\i}nimos quadrados foi implementado com matriz aumentada $\tilde{\boldsymbol{X}}=[\mathbf{1}\mid\boldsymbol{X}]$, alvos $\pm 1$ e solu\c{c}\~ao $\hat{\boldsymbol{\theta}}=\tilde{\boldsymbol{X}}^+\boldsymbol{y}$ por pseudoinversa.
+A classe prevista \'e definida pelo sinal de $\tilde{\boldsymbol{x}}^\top\hat{\boldsymbol{\theta}}$.
+
+\paragraph{Resultados (CV $k{=}5$, com SMOTE).}
+Acur\'acia $0{,}714 \pm 0{,}022$; precis\~ao $0{,}518 \pm 0{,}027$; revoca\c{c}\~ao $0{,}703 \pm 0{,}032$; F1 $0{,}596 \pm 0{,}028$; AUC $0{,}776 \pm 0{,}015$.
+O MQ apresentou boa revoca\c{c}\~ao de bad, embora com precis\~ao moderada.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.48\textwidth]{questao12_svm_linear_50_teste.png}\quad
-\includegraphics[width=0.48\textwidth]{questao13_svm_linear_50_teste.png}
-\caption{Quest\~oes~12 e~13: SVM nos dois blocos $50{+}50$.}
-\label{fig:q1213}
+\includegraphics[width=0.85\textwidth]{mq_cv_confusion_roc.png}
+\caption{MQ: matriz de confus\~ao e curva ROC na valida\c{c}\~ao cruzada ($k{=}5$).}
+\label{fig:mq}
+\end{figure}
+
+\section*{Vizinho mais pr\'oximo (kNN)}
+
+Foi utilizado o m\'etodo do vizinho mais pr\'oximo com $k=5$, o mesmo valor adotado no primeiro trabalho.
+Com o SMOTE, a revoca\c{c}\~ao aumentou em rela\c{c}\~ao ao caso sem balanceamento, com queda na acur\'acia.
+
+\paragraph{Resultados (CV $k{=}5$, com SMOTE).}
+Acur\'acia $0{,}630 \pm 0{,}024$; precis\~ao $0{,}429 \pm 0{,}022$; revoca\c{c}\~ao $0{,}703 \pm 0{,}041$; F1 $0{,}533 \pm 0{,}025$; AUC $0{,}701 \pm 0{,}021$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{knn_cv_confusion_roc.png}
+\caption{kNN ($k{=}5$): matriz de confus\~ao e curva ROC na valida\c{c}\~ao cruzada.}
+\label{fig:knn}
+\end{figure}
+
+\section*{Rede MLP (Perceptron Multicamadas)}
+
+A rede possui duas camadas ocultas, com 64 e 32 neur\'onios, fun\c{c}\~ao de ativa\c{c}\~ao ReLU e treinamento pelo m\'etodo Adam.
+Foi usada parada antecipada para limitar sobreajuste.
+
+\paragraph{Resultados (CV $k{=}5$, com SMOTE).}
+Acur\'acia $0{,}710 \pm 0{,}027$; precis\~ao $0{,}517 \pm 0{,}036$; revoca\c{c}\~ao $0{,}660 \pm 0{,}061$; F1 $0{,}577 \pm 0{,}026$; AUC $0{,}762 \pm 0{,}026$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{mlp_cv_confusion_roc.png}
+\caption{MLP com camadas $(64,32)$: matriz de confus\~ao e curva ROC na valida\c{c}\~ao cruzada.}
+\label{fig:mlp}
+\end{figure}
+
+\section*{SVM n\~ao-linear (kernel RBF)}
+
+No segundo trabalho foi usado SVM linear; aqui adotamos kernel radial (RBF), com par\^ametro de regulariza\c{c}\~ao $C=1$, para permitir fronteiras de decis\~ao n\~ao lineares entre os atributos de cr\'edito.
+
+\paragraph{Resultados (CV $k{=}5$, com SMOTE).}
+Acur\'acia $0{,}736 \pm 0{,}021$; precis\~ao $0{,}559 \pm 0{,}037$; revoca\c{c}\~ao $0{,}573 \pm 0{,}062$; F1 $0{,}565 \pm 0{,}041$; AUC $0{,}780 \pm 0{,}018$.
+O SVM com kernel RBF manteve precis\~ao e revoca\c{c}\~ao em n\'iveis intermedi\'arios, com AUC pr\'oximo dos melhores resultados observados.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{svm_cv_confusion_roc.png}
+\caption{SVM com kernel RBF ($C{=}1$): matriz de confus\~ao e curva ROC na valida\c{c}\~ao cruzada.}
+\label{fig:svm}
+\end{figure}
+
+\section*{AdaBoost}
+
+O AdaBoost foi configurado com 100 itera\c{c}\~oes, usando \'arvores de decis\~ao de profundidade 1 como classificadores base.
+
+\paragraph{Resultados (CV $k{=}5$, com SMOTE).}
+Acur\'acia $0{,}735 \pm 0{,}017$; precis\~ao $0{,}555 \pm 0{,}029$; revoca\c{c}\~ao $0{,}600 \pm 0{,}033$; F1 $0{,}576 \pm 0{,}023$; AUC $0{,}778 \pm 0{,}018$.
+Os resultados ficaram pr\'oximos aos do SVM com kernel RBF.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{adaboost_cv_confusion_roc.png}
+\caption{AdaBoost com 100 classificadores base: matriz de confus\~ao e curva ROC na valida\c{c}\~ao cruzada.}
+\label{fig:ada}
+\end{figure}
+
+\section*{Floresta aleat\'oria (Random Forest)}
+
+A floresta aleat\'oria foi treinada com 100 \'arvores de decis\~ao; a classe final \'e definida por vota\c{c}\~ao majorit\'aria.
+
+\paragraph{Resultados (CV $k{=}5$, com SMOTE).}
+Acur\'acia $0{,}765 \pm 0{,}009$; precis\~ao $0{,}657 \pm 0{,}037$; revoca\c{c}\~ao $0{,}460 \pm 0{,}017$; F1 $0{,}540 \pm 0{,}009$; AUC $0{,}784 \pm 0{,}028$.
+Entre os seis m\'etodos, a floresta aleat\'oria obteve a maior acur\'acia e a maior precis\~ao, mas tamb\'em a menor revoca\c{c}\~ao, ou seja, tendeu a classificar menos clientes como bad.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{rf_cv_confusion_roc.png}
+\caption{Floresta aleat\'oria com 100 \'arvores: matriz de confus\~ao e curva ROC na valida\c{c}\~ao cruzada.}
+\label{fig:rf}
 \end{figure}
 
 \FloatBarrier
-\section*{Quadro-resumo --- probabilidade de erro no teste}
+\section*{Compara\c{c}\~ao dos seis classificadores}
+
+Todos os m\'etodos foram avaliados com o mesmo pr\'e-processamento, o mesmo balanceamento por SMOTE no treino e a mesma valida\c{c}\~ao cruzada estratificada com $k=5$.
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{@{}llcc@{}}
+\small
+\begin{tabular}{@{}lcccccc@{}}
 \toprule
-\textbf{Quest\~ao} & \textbf{M\'etodo} & \textbf{Tamanho do treino} & $\hat P_e$ \\
+Classificador & Acc & Prec & Rec & F1 & AUC & Custo \\
 \midrule
---- & Bayes (te\'orico) & --- & $\approx 0{,}1056$ \\
-5 & Perceptron & $1000{+}1000$ & $0{,}1655$ \\
-6 & Perceptron & $50{+}50$ (bloco~1) & $0{,}3565$ \\
-7 & Perceptron & $50{+}50$ (bloco~2) & $0{,}1080$ \\
-8 & MQ (pseudoinversa) & $1000{+}1000$ & $0{,}1035$ \\
-9 & MQ & $50{+}50$ (bloco~1) & $0{,}1110$ \\
-10 & MQ & $50{+}50$ (bloco~2) & $0{,}1030$ \\
-11 & SVM linear ($C{=}1$) & $1000{+}1000$ & $0{,}1005$ \\
-12 & SVM linear & $50{+}50$ (bloco~1) & $0{,}1140$ \\
-13 & SVM linear & $50{+}50$ (bloco~2) & $0{,}1050$ \\
+MQ (pseudoinversa)        & $0{,}714$ & $0{,}518$ & $0{,}703$ & $0{,}596$ & $0{,}776$ & $642$ \\
+kNN ($k{=}5$)             & $0{,}630$ & $0{,}429$ & $0{,}703$ & $0{,}533$ & $0{,}701$ & $726$ \\
+MLP $(64,32)$             & $0{,}710$ & $0{,}517$ & $0{,}660$ & $0{,}577$ & $0{,}762$ & $698$ \\
+SVM RBF ($C{=}1$)         & $0{,}736$ & $0{,}559$ & $0{,}573$ & $0{,}565$ & $0{,}780$ & $776$ \\
+AdaBoost ($n{=}100$)      & $0{,}735$ & $0{,}555$ & $0{,}600$ & $0{,}576$ & $0{,}778$ & $745$ \\
+Floresta aleat\'oria ($n{=}100$) & $0{,}765$ & $0{,}657$ & $0{,}460$ & $0{,}540$ & $0{,}784$ & $883$ \\
 \bottomrule
 \end{tabular}
-\caption{Erros emp\'{\i}ricos no mesmo conjunto de teste ($2000$ amostras).}
-\label{tab:resumo}
+\caption{M\'edias das m\'etricas na valida\c{c}\~ao cruzada ($k{=}5$), com SMOTE aplicado no treino de cada fold. A coluna Custo \'e o custo total agregado das predi\c{c}\~oes ($5\cdot\text{FN} + 1\cdot\text{FP}$), conforme a matriz de custos da documenta\c{c}\~ao.}
+\label{tab:comparacao}
 \end{table}
 
-\section*{Quest\~ao 14 --- S\'{\i}ntese e compara\c{c}\~ao com Bayes}
+Quando a compara\c{c}\~ao leva em conta a matriz de custos (falso negativo cinco vezes mais caro que falso positivo), o custo total inverte o ranking sugerido pela acur\'acia: o MQ apresenta o menor custo ($642$) e a floresta aleat\'oria o maior ($883$), justamente por ter a menor revoca\c{c}\~ao de bad.
 
-O limiar \'otimo de Bayes ($\approx 10{,}6\%$ de erro) serve como refer\^encia inferior para este problema gerador.
+\section*{Efeito do SMOTE}
 
-Com treino completo, tanto \textbf{m\'{\i}nimos quadrados} ($10{,}35\%$) quanto o \textbf{SVM linear} com $C{=}1$ ($10{,}05\%$) aproximaram-se desse valor, o que \'e esperado: a fronteira de Bayes \'e linear e ambos os m\'etodos produzem separadores lineares adequados a dados quase linearmente separ\'aveis em m\'edia.
-
-O \textbf{perceptron} no treino completo ficou substancialmente acima ($16{,}55\%$), consistente com o facto de o algoritmo n\~ao estimar directamente o classificador likelihood-ratio \'otimo para Gaussianas.
-
-Com apenas $50{+}50$ exemplos, todos os m\'etodos oscilam em torno do valor de Bayes, mas o \textbf{perceptron} mostrou o comportamento mais extremo (de $\approx 35{,}7\%$ a $\approx 10{,}8\%$ entre os dois blocos), evidenciando forte sensibilidade ao ru\'{\i}do amostral.
-\textbf{MQ} e \textbf{SVM} mantiveram diferen\c{c}as menores entre blocos ($\approx 0{,}8$ p.p.\ e $\approx 0{,}9$ p.p., respectivamente), mais coerentes com modelos que estabilizam o hiperplano (solu\c{c}\~ao fechada do MQ; maximiza\c{c}\~ao de margem suavizada no SVM).
-
-\section*{Quest\~ao 15 --- Polariza\c{c}\~ao (vi\'es) e vari\^ancia entre os tr\^es m\'etodos lineares}
-
-Neste trabalho n\~ao estim\'amos vi\'es e vari\^ancia por Monte Carlo com muitas repeti\c{c}\~oes; interpretamos os conceitos de forma \textbf{qualitativa e emp\'{\i}rica} com base em (i)~erro com treino grande e (ii)~dispers\~ao entre os dois subconjuntos fixos de $50{+}50$.
+Para ilustrar a necessidade do balanceamento, compararam-se os casos com e sem SMOTE em MQ, kNN e MLP, na mesma valida\c{c}\~ao cruzada:
 
 \begin{itemize}
-  \item \textbf{Vari\^ancia entre os dois blocos pequenos:} o \textbf{perceptron} apresentou claramente a maior dispers\~ao de $\hat P_e$.
-  \textbf{M\'{\i}nimos quadrados} e \textbf{SVM} tiveram dispers\~oes semelhantes e bem menores.
-  \item \textbf{Polariza\c{c}\~ao relativa a Bayes com treino completo:} o perceptron ficou mais afastado do erro te\'orico de Bayes.
-  O SVM obteve $\hat P_e$ mais pr\'oximo de $P_e^{\mathrm{(Bayes)}}$, seguido de perto pelo MQ.
+  \item Sem SMOTE: a acur\'acia foi um pouco maior (por exemplo, cerca de $0{,}75$ no MQ), mas a revoca\c{c}\~ao de bad ficou baixa (cerca de $0{,}46$ no MQ e $0{,}34$ no kNN), pois o modelo passava a prever good com mais frequ\^encia.
+  \item Com SMOTE: a revoca\c{c}\~ao de bad subiu para cerca de $0{,}70$ no MQ e no kNN, com F1 em torno de $0{,}60$ no MQ; a acur\'acia diminuiu levemente, j\'a que mais exemplos passaram a ser classificados como bad, o que parece adequado diante da matriz de custos do problema.
 \end{itemize}
 
-Assim, \textbf{n\~ao h\'a um \'unico} dos tr\^es que minimize simultaneamente, nos dois crit\'erios observados, polariza\c{c}\~ao e vari\^ancia: se se privilegia estabilidade entre os dois blocos $50{+}50$, destacam-se \textbf{MQ} e \textbf{SVM}; se se privilegia proximidade ao Bayes com todo o treino, destaca-se sobretudo o \textbf{SVM} neste ensaio.
+Essa forma de aplicar o SMOTE apenas no treino de cada fold segue a orienta\c{c}\~ao discutida na aula de Pr\'e-processamento e Avalia\c{c}\~ao de Classificadores.
+
+\section*{Conclusão}
+
+O pr\'e-processamento --- codifica\c{c}\~ao das vari\'aveis categ\'oricas, padroniza\c{c}\~ao das num\'ericas e balanceamento no treino --- foi necess\'ario para comparar os seis classificadores em um conjunto desbalanceado.
+
+Pela acur\'acia e pela precis\~ao, a floresta aleat\'oria apresentou os melhores valores ($0{,}765$ e $0{,}657$, respectivamente).
+Pela revoca\c{c}\~ao de bad, que \'e relevante por causa do custo maior de falsos negativos, os melhores resultados ficaram com MQ e kNN (cerca de $0{,}70$), seguidos por MLP e AdaBoost.
+O AUC-ROC ficou em torno de $0{,}78$ para MQ, SVM, AdaBoost e floresta aleat\'oria, o que indica separa\c{c}\~ao razo\'avel entre as classes, independentemente do limiar de decis\~ao adotado.
+
+N\~ao h\'a um \'unico classificador claramente superior em todas as m\'etricas.
+A escolha depende do que se deseja priorizar: detectar mais clientes de risco (revoca\c{c}\~ao) ou reduzir falsos alarmes (precis\~ao), conforme a matriz de custos descrita na documenta\c{c}\~ao do conjunto de dados.
+Levando em conta essa matriz de custos ($5\cdot\text{FN} + 1\cdot\text{FP}$), o MQ obteve o menor custo total e a floresta aleat\'oria o maior, o que mostra que a maior acur\'acia n\~ao implica o melhor desempenho neste problema.
 
 \end{document}
