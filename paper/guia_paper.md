@@ -120,18 +120,49 @@ Ordem sugerida de notebooks em `classification/notebooks/`:
 
 ### Passo 1 — Pré-processamento e rótulos
 
-- [ ] Aplicar normalização das potências.
-- [ ] Filtrar faixa \(1515\)–\(1585\) nm.
-- [ ] Gerar máscaras top-\(k\) a partir de `target` e `wl_bragg`.
-- [ ] Verificar balanceamento: cada FBG aparece como “relevante” com frequência semelhante?
-- [ ] Salvar \(X\), \(y\) (máscara) e metadados em arquivo intermediário (`.npz` / `.pkl`).
+- [x] Aplicar normalização das potências.
+- [x] Filtrar faixa \(1515\)–\(1585\) nm.
+- [x] Gerar máscaras top-\(k\) a partir de `target` e `wl_bragg`.
+- [x] Verificar balanceamento: cada FBG aparece como “relevante” com frequência semelhante?
+- [x] Salvar \(X\), \(y\) (máscara) e metadados em arquivo intermediário (`.npz` / `.pkl`).
+
+> Implementado em `classification/notebooks/1 - Preprocess and labels.ipynb` (+ `scripts/run_passo1.py`).
+> Artefato: `classification/results/prepared_measured_k4.npz` (+ `prepared_measured_k4_meta.json`, `passo1_mask_balance.csv`).
+>
+> **Achados (dados reais `measured.dataset`):**
+> - Bruto: **8200×13**; após filtro aberto \(1515 < \lambda_{res} < 1585\): **7300** (removidas **900**: 400 abaixo, 500 acima).
+> - \(\lambda_{res}\) filtrado fica em **~1516.56–1580.19** nm (não preenche até 1585).
+> - `input_strength` bruto já tem **soma=1** por linha, mas **mínimo ≠ 0**; a normalização do Barino (min-subtract + re-soma) ainda altera \(X\) e deixa min≈0, soma≈1.
+> - Máscara top-4: **exatamente 4 uns/linha**; **0 empates** no limiar do \(k\)-ésimo; coincide com `argpartition` e `argsort`.
+> - Balanceamento **não uniforme** (esperado se \(\lambda_{res}\) concentra no meio): fração positiva de ~0.07 (FBG 0) a ~0.68 (FBG 4); FBG 12 ~0.014. Uniforme seria \(k/13 \approx 0.308\).
+> - Coerência espacial: correlação entre posição média do FBG e média de \(\lambda_{res}\) quando o FBG é positivo ≈ **0.992**.
+>
+> **Decisão:** manter a normalização do Barino (min-subtract + soma=1).
 
 ### Passo 2 — Metodologia de avaliação
 
-- [ ] Validação cruzada estratificada (cuidado: multi-rótulo — estratificar por \(\lambda_{res}\) em bins ou por padrão da máscara).
-- [ ] Alternativa robusta: `RepeatedStratifiedKFold` / split por faixas de \(\lambda_{res}\).
-- [ ] Separar hold-out final **só** para relatório (não para ajuste fino).
+- [x] Validação cruzada estratificada (cuidado: multi-rótulo — estratificar por \(\lambda_{res}\) em bins ou por padrão da máscara).
+- [x] Alternativa robusta: `RepeatedStratifiedKFold` / split por faixas de \(\lambda_{res}\).
+- [x] Separar hold-out final **só** para relatório (não para ajuste fino).
 - [ ] SMOTE / balanceamento: só se houver desbalanceamento claro **e** apenas no treino de cada fold.
+
+> Implementado em `classification/notebooks/2 - Evaluation methodology.ipynb` (+ `src/cv_utils.py`, `scripts/run_passo2.py`).
+> Artefato: `classification/results/cv_splits_passo2.npz` (+ meta/CSVs/figuras `passo2_*`).
+>
+> **Configuração (reprodutível, `random_state=42`):**
+> - Hold-out **20%** → **1460** amostras; desenvolvimento **5840**.
+> - Estratificação: **10 quantis de \(\lambda_{res}\)** (há também 10 máscaras únicas no dataset; a chave usada foi \(\lambda_{res}\), não o padrão da máscara).
+> - **A — `StratifiedKFold`:** 5 folds (1168 teste / 4672 treino cada).
+> - **B — `RepeatedStratifiedKFold`:** 5 folds × 5 repetições = **25** avaliações.
+>
+> **Coerência (dados reais):**
+> - Hold-out sem interseção com folds; cobertura total 7300.
+> - Fração positiva por FBG no hold-out ≈ global (diferença máxima ~0.01).
+> - \(\mathbb{E}[\lambda_{res}]\) no teste estável (~1541.54 nm); std entre folds: A≈0.069, B≈0.053.
+> - FBG 12 (mais raro): ≥12 positivos no teste em A; em B min=10, mediana=17.
+> - SMOTE **não** aplicado neste passo (só splits).
+>
+> **Decisão:** estratégia **A** (`StratifiedKFold`, 5 folds) para os passos seguintes. Hold-out de 20% permanece isolado para o relatório final. Estratégia B fica documentada como alternativa não selecionada.
 
 ### Passo 3 — Classificadores
 

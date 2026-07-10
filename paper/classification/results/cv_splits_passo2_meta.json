@@ -1,0 +1,58 @@
+{
+  "config": {
+    "hold_out_size": 0.2,
+    "n_splits": 5,
+    "n_repeats": 5,
+    "n_lambda_bins": 10,
+    "random_state": 42,
+    "stratify_by": "lambda_bins"
+  },
+  "n_total": 7300,
+  "n_dev": 5840,
+  "n_holdout": 1460,
+  "n_unique_masks": 10,
+  "n_lambda_bins_effective": 10,
+  "holdout_bin_counts": {
+    "0": 160,
+    "1": 160,
+    "2": 120,
+    "3": 160,
+    "4": 140,
+    "5": 140,
+    "6": 160,
+    "7": 140,
+    "8": 180,
+    "9": 100
+  },
+  "dev_bin_counts": {
+    "0": 640,
+    "1": 640,
+    "2": 480,
+    "3": 640,
+    "4": 560,
+    "5": 560,
+    "6": 640,
+    "7": 560,
+    "8": 720,
+    "9": 400
+  },
+  "strategy_a": {
+    "name": "StratifiedKFold",
+    "n_folds": 5,
+    "min_test_pos_any_fbg": 12
+  },
+  "strategy_b": {
+    "name": "RepeatedStratifiedKFold",
+    "n_splits": 5,
+    "n_repeats": 5,
+    "n_evaluations": 25,
+    "min_test_pos_any_fbg": 10
+  },
+  "notes": [
+    "Estratificação por quantis de lambda_res (não por máscara).",
+    "Hold-out isolado: não entra em nenhum fold de A ou B.",
+    "SMOTE não aplicado neste passo (só metodologia de split).",
+    "Índices relativos ao prepared_measured_k4.npz."
+  ],
+  "coherence_ok": true
+}

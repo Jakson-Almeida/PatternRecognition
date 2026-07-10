@@ -40,6 +40,24 @@ def normalize_input_strength(X: np.ndarray) -> np.ndarray:
     return X / row_sum
 
 
+def filter_wl_range(
+    X: np.ndarray,
+    wl_bragg: np.ndarray,
+    target: np.ndarray,
+    wl_range: tuple[float, float] = WL_RANGE,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Mantém amostras com wl_range[0] < lambda_res < wl_range[1] (como no notebook 4)."""
+    target = np.asarray(target, dtype=float).ravel()
+    lo, hi = wl_range
+    keep = (target > lo) & (target < hi)
+    return (
+        np.asarray(X, dtype=float)[keep],
+        np.asarray(wl_bragg, dtype=float)[keep],
+        target[keep],
+        keep,
+    )
+
+
 def make_topk_mask(wl_bragg: np.ndarray, target: np.ndarray, k: int = K_DEFAULT) -> np.ndarray:
     """Máscara multi-rótulo: 1 nos k FBGs mais próximos de lambda_res."""
     wl_bragg = np.asarray(wl_bragg, dtype=float)
@@ -58,13 +76,50 @@ def make_topk_mask(wl_bragg: np.ndarray, target: np.ndarray, k: int = K_DEFAULT)
     return mask
 
 
-def filter_wl_range(
-    X: np.ndarray,
-    wl_bragg: np.ndarray,
-    y: np.ndarray,
+def prepare_measured_classification(
+    k: int = K_DEFAULT,
     wl_range: tuple[float, float] = WL_RANGE,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Mantém amostras com target em (low, high)."""
-    low, high = wl_range
-    keep = (y > low) & (y < high)
-    return X[keep], wl_bragg[keep], y[keep], keep
+    path: Path | None = None,
+) -> dict:
+    """
+    Pipeline Passo 1: carrega measured.dataset, normaliza, filtra e gera máscara.
+
+    Retorna dicionário com arrays prontos e metadados (sem inventar campos).
+    """
+    raw = load_measured_dataset(path)
+    X_raw = np.asarray(raw["input_strength"], dtype=float)
+    wl_bragg_raw = np.asarray(raw["wl_bragg"], dtype=float)
+    target_raw = np.asarray(raw["target"], dtype=float).ravel()
+
+    X_norm = normalize_input_strength(X_raw)
+    X, wl_bragg, target, keep = filter_wl_range(X_norm, wl_bragg_raw, target_raw, wl_range)
+    y_mask = make_topk_mask(wl_bragg, target, k=k)
+
+    return {
+        "X": X,
+        "y_mask": y_mask,
+        "wl_bragg": wl_bragg,
+        "target": target,
+        "keep": keep,
+        "X_raw_shape": np.array(X_raw.shape, dtype=int),
+        "n_raw": np.int64(X_raw.shape[0]),
+        "n_kept": np.int64(X.shape[0]),
+        "k": np.int64(k),
+        "wl_range": np.array(wl_range, dtype=float),
+        "random_state": np.int64(RANDOM_STATE),
+    }
+
+
+def save_prepared_dataset(data: dict, out_path: Path | None = None) -> Path:
+    """Salva artefato do Passo 1 em .npz."""
+    out_path = out_path or (RESULTS_DIR / "prepared_measured_k4.npz")
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out_path, **data)
+    return out_path
+
+
+def load_prepared_dataset(path: Path | None = None) -> dict:
+    """Carrega artefato .npz do Passo 1."""
+    path = path or (RESULTS_DIR / "prepared_measured_k4.npz")
+    with np.load(path, allow_pickle=False) as z:
+        return {key: z[key] for key in z.files}
