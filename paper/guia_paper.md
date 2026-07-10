@@ -179,6 +179,24 @@ Comparar pelo menos os da disciplina (adaptados a multi-rótulo quando preciso):
 
 Opcional: baseline “ingênuo” (sempre os 4 FBGs de maior potência).
 
+> Implementado em `classification/notebooks/3 - Classifiers.ipynb` (+ `src/classifiers.py`, `src/metrics_utils.py`, `scripts/run_passo3.py`).
+> Artefatos: `results/passo3_summary.csv`, `passo3_fold_metrics.csv`, `figures/passo3_metrics_comparison.png`.
+>
+> **Protocolo:** CV estratégia A (5 folds); hold-out intacto; predição **top-4 por score**; sem SMOTE; defaults fixos (tuning no Passo 4).
+> Escala `StandardScaler` (fit só no treino) para kNN, SVM, MLP, MQ.
+>
+> **Resultados reais (média ± std, Jaccard samples):**
+> | Método | Jaccard | Exact match | F1 micro | Hamming |
+> |--------|---------|-------------|----------|---------|
+> | RandomForest | **0.974 ± 0.002** | 0.934 | 0.983 | 0.010 |
+> | AdaBoost | 0.971 ± 0.004 | 0.928 | 0.982 | 0.011 |
+> | MLP | 0.963 ± 0.005 | 0.908 | 0.977 | 0.014 |
+> | kNN | 0.963 ± 0.003 | 0.907 | 0.977 | 0.014 |
+> | SVM | 0.961 ± 0.002 | 0.902 | 0.975 | 0.015 |
+> | MQ | 0.922 ± 0.005 | 0.805 | 0.951 | 0.030 |
+>
+> Com máscaras de cardinalidade fixa \(k=4\), F1 micro = set recall (esperado).
+
 ### Passo 4 — Ajuste de hiperparâmetros
 
 - [ ] Grid/Random search **dentro** da CV (nested CV se possível).

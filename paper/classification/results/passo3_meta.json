@@ -1,0 +1,32 @@
+{
+  "cv_strategy": "A_StratifiedKFold",
+  "n_folds": 5,
+  "k": 4,
+  "holdout_used": false,
+  "prediction": "top-k from scores (exactly k positives per sample)",
+  "classifiers": [
+    "kNN",
+    "SVM",
+    "MLP",
+    "RandomForest",
+    "AdaBoost",
+    "MQ"
+  ],
+  "defaults": {
+    "kNN": "n_neighbors=5, StandardScaler",
+    "SVM": "OvR RBF C=1.0, StandardScaler",
+    "MLP": "hidden=(64,32), early_stopping, StandardScaler",
+    "RandomForest": "n_estimators=100, multilabel nativo",
+      "AdaBoost": "OvR n_estimators=50",
+    "MQ": "MultiOutput LinearRegression + StandardScaler; top-k nos valores previstos"
+  },
+  "ranking_by_jaccard_samples_mean": [
+    "RandomForest",
+    "AdaBoost",
+    "MLP",
+    "kNN",
+    "SVM",
+    "MQ"
+  ],
+  "smote": false
+}
