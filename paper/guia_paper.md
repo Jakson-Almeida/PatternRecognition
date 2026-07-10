@@ -111,9 +111,12 @@ Ordem sugerida de notebooks em `classification/notebooks/`:
 
 ### Passo 0 — Setup
 
-- [ ] Ambiente Python (numpy, pandas, scikit-learn, matplotlib; imbalanced-learn se necessário).
-- [ ] Carregar `measured.dataset` e inspecionar \(n\), distribuição de \(\lambda_{res}\), exemplos de máscara.
-- [ ] Fixar `random_state` e documentar versões.
+- [x] Ambiente Python (numpy, pandas, scikit-learn, matplotlib; imbalanced-learn se necessário).
+- [x] Carregar `measured.dataset` e inspecionar \(n\), distribuição de \(\lambda_{res}\), exemplos de máscara.
+- [x] Fixar `random_state` e documentar versões.
+
+> Implementado em `classification/notebooks/0 - Setup.ipynb` (+ `classification/src/data_utils.py`).
+> Achado inicial: após filtro restam **7300/8200** amostras; a máscara top-4 **não é uniforme** (FBGs nas bordas do array são raramente selecionadas).
 
 ### Passo 1 — Pré-processamento e rótulos
 
