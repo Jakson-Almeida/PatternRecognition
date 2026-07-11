@@ -1,0 +1,40 @@
+{
+  "best_classifier_k4": "SVM",
+  "holdout_used": false,
+  "barino_regression_impact": "not_run_optional",
+  "summary_k4_ranking": [
+    "SVM",
+    "RandomForest",
+    "AdaBoost",
+    "MLP",
+    "kNN",
+    "MQ"
+  ],
+  "lambda_edge_vs_mid": {
+    "classifier": "SVM",
+    "min_edge_bin_jaccard": 0.978,
+    "max_bin_jaccard": 0.9978571428571428
+  },
+  "k_comparison_best_per_k": {
+    "3": {
+      "classifier": "SVM",
+      "jaccard_mean": 0.9845034246575342
+    },
+    "4": {
+      "classifier": "SVM",
+      "jaccard_mean": 0.9739041095890411
+    },
+    "5": {
+      "classifier": "SVM",
+      "jaccard_mean": 0.9783675799086758
+    }
+  },
+  "feature_delta": {
+    "AdaBoost": 0.008356,
+    "MLP": 0.013151,
+    "MQ": 0.015457,
+    "RandomForest": 0.008219,
+    "SVM": 0.000365,
+    "kNN": -0.022078
+  }
+}
