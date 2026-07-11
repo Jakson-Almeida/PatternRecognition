@@ -1,0 +1,24 @@
+{
+  "ieee_figures_dir": "paper/ieee/figures",
+  "figures": {
+    "schema": "fig_schema_lpg_fbg.png",
+    "example": "fig_mask_true_vs_pred.png",
+    "metrics": "fig_metrics_classifiers.png",
+    "heatmap": "fig_error_heatmap_fbg.png",
+    "lambda": "fig_jaccard_vs_lambda.png"
+  },
+  "example_meta": {
+    "fold": 0,
+    "classifier": "SVM",
+    "sample_ok_global_idx": 9,
+    "sample_err_global_idx": 314,
+    "n_exact_in_fold_test": 1106,
+    "n_test": 1168
+  },
+  "roc_pr_curves": "not_generated_optional",
+  "notes": [
+    "Esquema usa posições médias reais de wl_bragg e lambda_res mediana.",
+    "Exemplo true/pred: SVM afinado, fold 0 da estratégia A (hold-out intacto).",
+    "Métricas/heatmap/lambda: artefatos reais do Passo 5."
+  ]
+}

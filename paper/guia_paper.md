@@ -285,11 +285,24 @@ Reportar (média ± desvio entre folds):
 
 ### Passo 6 — Figuras para o artigo
 
-- [ ] Esquema LPG + 13 FBGs + máscara (como no rascunho).
-- [ ] Exemplo de espectro / potências com máscara verdadeira vs prevista.
-- [ ] Barras ou tabela de métricas por classificador.
-- [ ] Heatmap de erros por índice de FBG.
+- [x] Esquema LPG + 13 FBGs + máscara (como no rascunho).
+- [x] Exemplo de espectro / potências com máscara verdadeira vs prevista.
+- [x] Barras ou tabela de métricas por classificador.
+- [x] Heatmap de erros por índice de FBG.
 - [ ] (Opcional) Curvas ROC por canal ou precision-recall.
+
+> Implementado em `classification/notebooks/6 - Paper figures.ipynb` (+ `scripts/run_passo6.py`).
+> Figuras de artigo em **`paper/ieee/figures/`** (cópias também em `classification/figures/`):
+>
+> | Arquivo | Uso sugerido no IEEE |
+> |---------|----------------------|
+> | `fig_schema_lpg_fbg.png` | Fig. 1 — problema / máscara top-4 |
+> | `fig_mask_true_vs_pred.png` | Fig. 2 — exemplo real (SVM) |
+> | `fig_metrics_classifiers.png` | Fig. 3 — comparação dos 6 métodos |
+> | `fig_error_heatmap_fbg.png` | Fig. 4 — erro por canal |
+> | `fig_jaccard_vs_lambda.png` | Fig. 5 — desempenho vs \(\lambda_{res}\) |
+>
+> ROC/PR: **não** gerado (opcional). Próximo passo natural: montar `paper/ieee/main.tex`.
 
 ---
 
