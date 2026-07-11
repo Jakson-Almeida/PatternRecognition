@@ -1,0 +1,8 @@
+{
+  "n_dev": 5840,
+  "n_holdout": 1460,
+  "k": 4,
+  "protocol": "fit on full development set; single evaluation on hold-out",
+  "models": "Passo 4 consensus hyperparameters",
+  "features": "normalized optical powers only (13D)"
+}

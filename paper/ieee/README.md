@@ -1,5 +1,23 @@
-# IEEE conference paper (Trabalho Final)
+# Artigo IEEE (conferência) — Trabalho Final
 
-Figuras geradas no Passo 6 ficam em `figures/`.
+Artigo em **português**, classe `IEEEtran` (conference). Limite alvo: **até 6 páginas**.
 
-Próximo: adicionar `main.tex` (IEEEtran conference) e `references.bib`.
+## Arquivos
+
+| Arquivo | Descrição |
+|---------|-----------|
+| `main.tex` | Artigo |
+| `references.bib` | Bibliografia |
+| `figures/` | Figuras do Passo 6 |
+| `main.pdf` | PDF compilado |
+
+## Compilar
+
+```bash
+pdflatex main
+bibtex main
+pdflatex main
+pdflatex main
+```
+
+Estado atual (rascunho compilável): **3 páginas**, com hold-out e CV reportados.

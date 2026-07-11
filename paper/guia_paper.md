@@ -321,7 +321,18 @@ Antes de escrever o artigo, garantir:
 
 ## 7. Artigo IEEE (conferência)
 
-### 7.1 Baixar o template
+### 7.1 Status
+
+- [x] Template IEEEtran (`conference`) em `paper/ieee/`.
+- [x] Artigo em **português**.
+- [x] Limite: **até 6 páginas** (rascunho atual: **3 páginas** em `main.pdf`).
+- [x] Hold-out avaliado uma vez após o tuning (`classification/results/passo7_holdout_metrics.csv`).
+- [ ] Polir texto / equalizar colunas da última página / confirmar e-mail institucional se for incluir.
+- [ ] Apresentação 15 min (Passo seguinte / Fase F).
+
+Arquivos: `ieee/main.tex`, `ieee/references.bib`, `ieee/figures/`, `ieee/main.pdf`.
+
+### 7.2 Estrutura sugerida do artigo
 
 Opções oficiais:
 
@@ -351,7 +362,7 @@ Colocar o projeto em `paper/ieee/` (ex.: `main.tex` + `references.bib` + `figure
 8. **Conclusion**
 9. **References**
 
-Tamanho típico de conferência: ~4–6 páginas (confirmar com o professor se houver limite).
+Tamanho típico de conferência: ~4–6 páginas. **Neste trabalho: máximo 6 páginas**; rascunho atual com ~3 páginas (há folga para polimento).
 
 ### 7.3 Apresentação (15 min)
 

@@ -1,0 +1,200 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{hyperref}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+
+\title{Classificação multi-rótulo de FBGs relevantes para demodulação de sensores LPFG}
+
+\author{
+\IEEEauthorblockN{Jakson da Rocha Almeida}
+\IEEEauthorblockA{Universidade Federal de Juiz de Fora (UFJF)\\
+Juiz de Fora, MG, Brasil}
+}
+
+\maketitle
+
+\begin{abstract}
+Sensores baseados em redes de período longo (LPFG) são úteis, mas sua interrogação por analisador óptico de espectro é cara.
+Uma alternativa é modular o espectro da LPFG com um array de redes de Bragg (FBG) e estimar o comprimento de onda ressonante $\lambda_{res}$ por aprendizado de máquina.
+Este trabalho aborda a seleção das FBGs mais próximas de $\lambda_{res}$ como classificação multi-rótulo: a partir das potências ópticas normalizadas de 13 FBGs, prediz-se uma máscara top-$k$ ($k{=}4$).
+Seis classificadores clássicos foram avaliados com validação cruzada estratificada e hold-out isolado, sobre dados reais autorizados.
+Com hiperparâmetros ajustados por nested CV, o SVM one-vs-rest obteve Jaccard médio de $0{,}974$ na CV e $0{,}975$ no hold-out.
+A análise mostra que o pior desempenho não ocorre nas bordas espectrais e que incluir as posições das FBGs beneficia alguns métodos, mas não o SVM.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Classificação multi-rótulo, FBG, LPFG, reconhecimento de padrões, sensores ópticos.
+\end{IEEEkeywords}
+
+\section{Introdução}
+
+Redes de período longo em fibra (LPFG) formam sensores versáteis para grandezas como índice de refração e temperatura~\cite{James1996LPFG}.
+Contudo, a leitura convencional do vale ressonante exige instrumentação espectral de alto custo.
+Redes de Bragg (FBG) são amplamente usadas em sensores e filtros~\cite{Kersey1997FBG} e podem atuar como banco de filtros estáticos para modular o espectro da LPFG~\cite{Barino2020Sensors,Barino2025TIM}.
+
+Barino e dos Santos demonstraram demodulação de LPFG a partir das potências de um array de FBGs com uma rede neural com autoatenção~\cite{Barino2025TIM}.
+A atenção sugere que apenas um subconjunto de FBGs é relevante para localizar $\lambda_{res}$.
+Motivados por essa observação, formulamos explicitamente a \emph{Parte~1} do problema: classificar quais FBGs devem compor a máscara de interesse antes de uma eventual interrogação/regressão (Parte~2).
+
+\textbf{Contribuições:} (i)~definição multi-rótulo da máscara top-$k$ a partir de dados reais; (ii)~comparação de seis classificadores da disciplina com CV aninhada e hold-out; (iii)~análise de erros versus $\lambda_{res}$, de $k\in\{3,4,5\}$ e do uso das posições FBG.
+
+\section{Trabalhos relacionados}
+
+A interrogação de LPFG com arrays FBG e aprendizado de máquina foi explorada em~\cite{Barino2020Sensors,Barino2024LAWOFS,Barino2025TIM}, com ênfase na estimação de $\lambda_{res}$.
+O presente trabalho não substitui esses modelos de regressão: concentra-se na seleção das FBGs relevantes, alinhada à ideia de filtragem dinâmica por atenção.
+
+A classificação multi-rótulo admite métricas específicas (Hamming, Jaccard por amostra, exact match)~\cite{Tsoumakas2007ML,Zhang2014ML}.
+Empregamos métodos clássicos --- kNN, SVM~\cite{Cortes1995SVM}, MLP, florestas aleatórias~\cite{Breiman2001RF}, AdaBoost e mínimos quadrados --- conforme o repertório da disciplina e práticas de avaliação estatística~\cite{Hastie2009ESL}.
+
+\section{Formulação do problema}
+
+Cada amostra $n$ fornece potências $\mathbf{x}^{(n)}\in\mathbb{R}^{13}$, posições $\boldsymbol{\lambda}_{\mathrm{FBG}}^{(n)}\in\mathbb{R}^{13}$ e o alvo $\lambda_{res}^{(n)}$.
+Define-se o erro $e_i=|\lambda_{\mathrm{FBG},i}-\lambda_{res}|$ e a máscara $y\in\{0,1\}^{13}$ com $y_i=1$ nos $k$ índices de menor $e_i$ (Fig.~\ref{fig:schema}).
+Adotamos $k{=}4$ como configuração principal, coerente com a heurística discutida com o autor dos dados.
+
+O classificador recebe $\mathbf{x}$ (potências normalizadas) e produz escores por canal; a predição final seleciona os $k$ maiores escores, garantindo cardinalidade fixa e alinhamento ao rótulo.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig_schema_lpg_fbg.png}
+\caption{Esquema da LPFG, do array de 13 FBGs e da máscara top-4 em torno de $\lambda_{res}$.}
+\label{fig:schema}
+\end{figure}
+
+\section{Metodologia}
+
+\subsection{Dados e pré-processamento}
+Usamos o conjunto medido disponibilizado em~\cite{Barino2025TIM} (autorização de uso para este trabalho).
+Há $8200$ amostras; após o filtro aberto $1515<\lambda_{res}<1585$~nm restam $7300$.
+As potências são normalizadas por amostra (subtração do mínimo e soma unitária), como no pipeline de avaliação de~\cite{Barino2025TIM}.
+A máscara top-4 é desbalanceada por canal: FBGs centrais são positivas com bem maior frequência que as das bordas do array.
+
+\subsection{Classificadores}
+Comparamos: kNN; SVM RBF em one-vs-rest; MLP; Random Forest; AdaBoost em one-vs-rest; e regressão linear multi-saída (MQ), com top-$k$ nos valores previstos.
+kNN, SVM, MLP e MQ usam \texttt{StandardScaler} ajustado apenas no treino de cada fold.
+
+\subsection{Avaliação}
+Reservamos $20\%$ das amostras como hold-out estratificado por quantis de $\lambda_{res}$ ($1460$ amostras), sem uso em ajuste.
+No desenvolvimento ($5840$), usamos \texttt{StratifiedKFold} com $5$ folds (estratégia A).
+Hiperparâmetros foram escolhidos por nested CV (\texttt{GridSearchCV} interno de $3$ folds, scorer $=$ Jaccard top-$k$).
+A métrica principal é o Jaccard por amostra; reportamos também exact match, F1 micro/macro e Hamming.
+Após o tuning, os modelos de consenso foram retreinados no desenvolvimento completo e avaliados \emph{uma única vez} no hold-out.
+
+\section{Resultados}
+
+\subsection{Desempenho principal}
+A Tabela~\ref{tab:cv} resume a CV com modelos afinados ($k{=}4$, só potências).
+O SVM lidera em Jaccard ($0{,}974\pm0{,}003$), seguido de perto por Random Forest e AdaBoost.
+O MQ permanece como baseline linear mais fraco.
+No hold-out (Tabela~\ref{tab:hold}), a ordem se mantém: SVM com Jaccard $0{,}975$, confirmando generalização sem retuning no teste final.
+
+\begin{table}[!t]
+\caption{CV estratégia A (média $\pm$ desvio, $k{=}4$).}
+\label{tab:cv}
+\centering
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lcccc}
+\toprule
+Método & Jaccard & Exact & F1 mic. & Hamm. \\
+\midrule
+SVM & $\mathbf{0{,}974\pm0{,}003}$ & $0{,}935$ & $0{,}984$ & $0{,}010$ \\
+RF & $0{,}973\pm0{,}002$ & $0{,}933$ & $0{,}983$ & $0{,}010$ \\
+AdaBoost & $0{,}973\pm0{,}004$ & $0{,}932$ & $0{,}983$ & $0{,}011$ \\
+MLP & $0{,}965\pm0{,}006$ & $0{,}912$ & $0{,}978$ & $0{,}014$ \\
+kNN & $0{,}964\pm0{,}002$ & $0{,}910$ & $0{,}978$ & $0{,}014$ \\
+MQ & $0{,}922\pm0{,}005$ & $0{,}805$ & $0{,}951$ & $0{,}030$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!t]
+\caption{Hold-out único (treino no desenvolvimento completo).}
+\label{tab:hold}
+\centering
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lccc}
+\toprule
+Método & Jaccard & Exact & F1 micro \\
+\midrule
+SVM & $\mathbf{0{,}975}$ & $0{,}938$ & $0{,}985$ \\
+RF & $0{,}974$ & $0{,}936$ & $0{,}984$ \\
+MLP & $0{,}974$ & $0{,}934$ & $0{,}984$ \\
+AdaBoost & $0{,}973$ & $0{,}934$ & $0{,}983$ \\
+kNN & $0{,}967$ & $0{,}918$ & $0{,}979$ \\
+MQ & $0{,}933$ & $0{,}832$ & $0{,}958$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A Fig.~\ref{fig:metrics} compara as métricas na CV; a Fig.~\ref{fig:example} ilustra um acerto e um erro típico do SVM.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig_metrics_classifiers.png}
+\caption{Comparação dos seis métodos na CV ($k{=}4$).}
+\label{fig:metrics}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig_mask_true_vs_pred.png}
+\caption{Exemplo real: máscara verdadeira versus prevista (SVM).}
+\label{fig:example}
+\end{figure}
+
+\subsection{Análise crítica}
+\textbf{Erros versus $\lambda_{res}$.}
+A hipótese de piora nas bordas espectrais não se confirma: para o SVM, o bin mais difícil situa-se em torno de $1553$--$1564$~nm (Jaccard ${\approx}0{,}91$), enquanto bordas e centro permanecem ${\geq}0{,}97$ (Fig.~\ref{fig:lambda}).
+
+\textbf{Efeito de $k$.}
+Para $k\in\{3,4,5\}$, o SVM permanece o melhor; o Jaccard é mais alto em $k{=}3$ ($0{,}985$), o que é esperado por ser um problema de menor cardinalidade.
+Mantemos $k{=}4$ por alinhamento à heurística alvo.
+
+\textbf{Posições FBG.}
+Concatenar $\boldsymbol{\lambda}_{\mathrm{FBG}}$ às potências melhora RF, AdaBoost, MLP e MQ (${\approx}{+}0{,}008$ a ${+}0{,}015$ em Jaccard), é quase neutro para o SVM e \emph{prejudica} o kNN ($-0{,}022$).
+Com posições, a RF atinge ${\approx}0{,}981$ na CV.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig_jaccard_vs_lambda.png}
+\caption{Jaccard médio por bin de $\lambda_{res}$ (CV empilhada).}
+\label{fig:lambda}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.95\columnwidth]{fig_error_heatmap_fbg.png}
+\caption{Taxa de erro por canal FBG.}
+\label{fig:heatmap}
+\end{figure}
+
+A Fig.~\ref{fig:heatmap} evidencia erros maiores em canais com suporte positivo baixo (bordas do array), coerente com o desbalanceamento da máscara.
+
+\section{Discussão}
+
+A classificação da máscara é resolúvel com métodos clássicos e alto Jaccard, o que reforça a viabilidade de uma arquitetura em duas etapas: seleção de FBGs seguida de estimação de $\lambda_{res}$ (como em~\cite{Barino2025TIM}).
+Limitações: não medimos ainda o impacto da máscara na regressão; não exploramos SMOTE multi-rótulo.
+
+\section{Conclusão}
+
+Formulamos e avaliamos a seleção de FBGs relevantes à demodulação de LPFG como classificação multi-rótulo top-$4$.
+Com dados reais, nested CV e hold-out isolado, o SVM RBF one-vs-rest obteve o melhor compromisso (Jaccard ${\approx}0{,}975$ no hold-out).
+Próximos passos incluem acoplar a máscara ao modelo de interrogação e avaliar o ganho em RMSE de $\lambda_{res}$.
+
+\section*{Agradecimentos}
+Agradecemos ao Dr.~Felipe Oliveira Barino pela autorização de uso dos dados e código associados a~\cite{Barino2025TIM}.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
