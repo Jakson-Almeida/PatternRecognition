@@ -1,0 +1,31 @@
+fold,classifier,best_params,best_inner_jaccard
+0,kNN,"{""clf__n_neighbors"": 7, ""clf__weights"": ""distance""}",0.9613012197457945
+0,SVM,"{""clf__estimator__C"": 10.0, ""clf__estimator__gamma"": 0.1}",0.9697769730967769
+0,MLP,"{""clf__alpha"": 0.0001, ""clf__hidden_layer_sizes"": [128, 64]}",0.9587316270688313
+0,RandomForest,"{""max_depth"": 20, ""min_samples_leaf"": 1, ""n_estimators"": 200}",0.9697766433094813
+0,AdaBoost,"{""estimator__learning_rate"": 1.0, ""estimator__n_estimators"": 100}",0.9696911184708642
+0,MQ,"{""clf__estimator__alpha"": 100.0}",0.921774416878807
+1,kNN,"{""clf__n_neighbors"": 11, ""clf__weights"": ""distance""}",0.9619863528520692
+1,SVM,"{""clf__estimator__C"": 10.0, ""clf__estimator__gamma"": 0.1}",0.9720039717383281
+1,MLP,"{""clf__alpha"": 0.0001, ""clf__hidden_layer_sizes"": [128, 64]}",0.9614718846711842
+1,RandomForest,"{""max_depth"": 20, ""min_samples_leaf"": 2, ""n_estimators"": 100}",0.9696921627972998
+1,AdaBoost,"{""estimator__learning_rate"": 1.0, ""estimator__n_estimators"": 50}",0.9696349996660903
+1,MQ,"{""clf__estimator__alpha"": 0.01}",0.9216320586962757
+2,kNN,"{""clf__n_neighbors"": 11, ""clf__weights"": ""distance""}",0.9614727641039721
+2,SVM,"{""clf__estimator__C"": 10.0, ""clf__estimator__gamma"": 0.1}",0.9720037518801311
+2,MLP,"{""clf__alpha"": 0.0001, ""clf__hidden_layer_sizes"": [128, 64]}",0.962072262442531
+2,RandomForest,"{""max_depth"": null, ""min_samples_leaf"": 1, ""n_estimators"": 200}",0.9698634323327312
+2,AdaBoost,"{""estimator__learning_rate"": 1.0, ""estimator__n_estimators"": 100}",0.970063136861636
+2,MQ,"{""clf__estimator__alpha"": 1.0}",0.9214329587774124
+3,kNN,"{""clf__n_neighbors"": 7, ""clf__weights"": ""distance""}",0.9643845110999534
+3,SVM,"{""clf__estimator__C"": 10.0, ""clf__estimator__gamma"": 0.1}",0.9724314860023157
+3,MLP,"{""clf__alpha"": 0.0001, ""clf__hidden_layer_sizes"": [64, 32]}",0.96001735780465
+3,RandomForest,"{""max_depth"": null, ""min_samples_leaf"": 1, ""n_estimators"": 100}",0.9708907197580241
+3,AdaBoost,"{""estimator__learning_rate"": 1.0, ""estimator__n_estimators"": 100}",0.9717470124706318
+3,MQ,"{""clf__estimator__alpha"": 0.01}",0.9218045924163395
+4,kNN,"{""clf__n_neighbors"": 11, ""clf__weights"": ""uniform""}",0.9623287819938335
+4,SVM,"{""clf__estimator__C"": 10.0, ""clf__estimator__gamma"": 0.1}",0.971147129380228
+4,MLP,"{""clf__alpha"": 0.001, ""clf__hidden_layer_sizes"": [128, 64]}",0.9614739183595061
+4,RandomForest,"{""max_depth"": null, ""min_samples_leaf"": 1, ""n_estimators"": 200}",0.96823659160433
+4,AdaBoost,"{""estimator__learning_rate"": 1.0, ""estimator__n_estimators"": 100}",0.9696919979036521
+4,MQ,"{""clf__estimator__alpha"": 0.01}",0.9204917641577457

@@ -199,8 +199,26 @@ Opcional: baseline “ingênuo” (sempre os 4 FBGs de maior potência).
 
 ### Passo 4 — Ajuste de hiperparâmetros
 
-- [ ] Grid/Random search **dentro** da CV (nested CV se possível).
-- [ ] Não usar o conjunto de teste final para escolher \(k\), \(C\), profundidade, etc.
+- [x] Grid/Random search **dentro** da CV (nested CV se possível).
+- [x] Não usar o conjunto de teste final para escolher \(k\), \(C\), profundidade, etc.
+
+> Implementado em `classification/notebooks/4 - Hyperparameter tuning.ipynb` (+ `src/tuning.py`, `scripts/run_passo4.py`).
+> Artefatos: `passo4_summary.csv`, `passo4_best_params.csv`, `figures/passo4_vs_passo3_jaccard.png`.
+>
+> **Protocolo:** nested CV — outer = estratégia A (5); inner = `GridSearchCV` 3-fold estratificado por bins de \(\lambda_{res}\) **apenas no treino**; scorer = Jaccard top-4; hold-out intacto.
+> MQ no Passo 4: busca \(\alpha\) de **Ridge** (OLS do Passo 3 não tem hiperparâmetro).
+>
+> **Resultados (Jaccard samples, teste externo):**
+> | Método | Passo 4 | Passo 3 | Δ |
+> |--------|---------|---------|---|
+> | **SVM** | **0.974 ± 0.003** | 0.961 | **+0.013** |
+> | RandomForest | 0.973 ± 0.002 | 0.974 | −0.001 |
+> | AdaBoost | 0.972 ± 0.004 | 0.971 | +0.001 |
+> | MLP | 0.965 ± 0.006 | 0.963 | +0.001 |
+> | kNN | 0.964 ± 0.002 | 0.963 | +0.001 |
+> | MQ | 0.922 ± 0.005 | 0.922 | ~0 |
+>
+> **Consenso estável entre folds:** SVM sempre `C=10`, `gamma=0.1`. AdaBoost tende a `n_estimators=100`, `learning_rate=1.0`. Demais métodos variam mais entre folds.
 
 ### Passo 5 — Métricas e análise
 
