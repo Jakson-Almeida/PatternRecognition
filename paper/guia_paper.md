@@ -328,7 +328,7 @@ Antes de escrever o artigo, garantir:
 - [x] Limite: **até 6 páginas** (rascunho atual: **3 páginas** em `main.pdf`).
 - [x] Hold-out avaliado uma vez após o tuning (`classification/results/passo7_holdout_metrics.csv`).
 - [ ] Polir texto / equalizar colunas da última página / confirmar e-mail institucional se for incluir.
-- [ ] Apresentação 15 min (Passo seguinte / Fase F).
+- [x] Apresentação 15 min (Beamer): `paper/presentation/apresentacao.pdf` (**18** slides, ≤20).
 
 Arquivos: `ieee/main.tex`, `ieee/references.bib`, `ieee/figures/`, `ieee/main.pdf`.
 

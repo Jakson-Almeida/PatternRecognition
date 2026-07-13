@@ -1,0 +1,280 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+
+\graphicspath{{../ieee/figures/}{../classification/figures/}}
+
+\title{Classificação multi-rótulo de FBGs relevantes\\para demodulação de LPFG}
+\subtitle{Trabalho Final --- Reconhecimento de Padrões}
+\author{Jakson da Rocha Almeida}
+\institute{Programa de Pós-Graduação em Engenharia Elétrica\\Universidade Federal de Juiz de Fora (UFJF)}
+\date{}
+
+\begin{document}
+
+%---------------------------------------------------------------------
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%---------------------------------------------------------------------
+\begin{frame}{Roteiro}
+  \tableofcontents
+\end{frame}
+
+%=====================================================================
+\section{Motivação e problema}
+
+\begin{frame}{Motivação}
+  \begin{itemize}
+    \item Sensores LPFG exigem, em geral, interrogação espectral cara.
+    \item Alternativa: array de FBGs + aprendizado de máquina para estimar $\lambda_{res}$.
+    \item No trabalho do Barino, a atenção sugere que \textbf{nem todas as FBGs importam igualmente}.
+  \end{itemize}
+  \vspace{0.6em}
+  \textbf{Pergunta de reconhecimento de padrões:}\\
+  a partir das potências das 13 FBGs, \emph{quais} são as relevantes para localizar o vale?
+\end{frame}
+
+\begin{frame}{Objetivo deste trabalho}
+  \begin{block}{Parte 1 --- Classificação (foco)}
+    Predizer uma \textbf{máscara multi-rótulo} $y\in\{0,1\}^{13}$:\\
+    os $k$ FBGs mais próximos de $\lambda_{res}$ ($k{=}4$).
+  \end{block}
+  \begin{block}{Parte 2 --- Interrogação (contexto)}
+    Estimar $\lambda_{res}$ (já feita no paper do Barino; não refeita aqui).
+  \end{block}
+  \vspace{0.4em}
+  Entregas da disciplina: artigo IEEEtran + apresentação (15~min).
+\end{frame}
+
+\begin{frame}{Formulação do problema de RP}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \textbf{Entrada} $\mathbf{x}\in\mathbb{R}^{13}$\\
+      potências ópticas normalizadas.
+      \vspace{0.5em}
+
+      \textbf{Rótulo} $y\in\{0,1\}^{13}$\\[0.3em]
+      $e_i = |\lambda_{\mathrm{FBG},i}-\lambda_{res}|$\\[0.2em]
+      $y_i=1$ nos $k$ menores $e_i$.
+      \vspace{0.5em}
+
+      \textbf{Predição:} top-$k$ nos escores\\
+      (cardinalidade fixa $=4$).
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \includegraphics[width=\linewidth]{fig_schema_lpg_fbg.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%=====================================================================
+\section{Dados e pré-processamento}
+
+\begin{frame}{Origem dos dados}
+  \begin{itemize}
+    \item Fonte: \texttt{measured.dataset} (dados \textbf{reais}, autorizados).
+    \item Contexto: demodulação LPFG com array FBG (Barino et al.).
+    \item Cada amostra corresponde a uma configuração medida do sistema óptico.
+  \end{itemize}
+  \vspace{0.8em}
+  \begin{table}
+    \centering
+    \begin{tabular}{lcc}
+      \toprule
+      Campo & Dimensão & Uso em RP \\
+      \midrule
+      \texttt{input\_strength} & 13 & atributos ($X$) \\
+      \texttt{wl\_bragg} & 13 & gera rótulo \\
+      \texttt{target} ($\lambda_{res}$) & 1 & gera rótulo \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}{Pré-processamento}
+  \begin{enumerate}
+    \item \textbf{Filtro de faixa:} manter $1515 < \lambda_{res} < 1585$~nm\\
+          $8200 \rightarrow 7300$ amostras (900 removidas).
+    \item \textbf{Normalização} (por amostra, critério do Barino):\\
+          $X \leftarrow X-\min(X)$; \quad $X \leftarrow X/\sum X$.
+    \item \textbf{Rótulo top-4} a partir de $|\lambda_{\mathrm{FBG}}-\lambda_{res}|$.
+  \end{enumerate}
+  \vspace{0.6em}
+  \begin{alertblock}{Observação}
+    A máscara é \textbf{desbalanceada} por canal:\\
+    FBG~4 $\approx 68\%$ positivos; FBG~12 $\approx 1{,}4\%$.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Atributos e rótulos (visão de RP)}
+  \begin{itemize}
+    \item \textbf{Atributos:} 13 potências normalizadas (protocolo principal).
+    \item \textbf{Rótulo:} vetor binário 13D (multi-rótulo), exatamente 4 uns.
+    \item \textbf{Ablação:} também testamos concatenar $\lambda_{\mathrm{FBG}}$ à entrada.
+    \item Há 10 padrões de máscara distintos no conjunto filtrado.
+  \end{itemize}
+  \vspace{0.5em}
+  Coerência espacial do rótulo: correlação posição FBG $\times$ $\lambda_{res}$\\
+  quando o canal é positivo $\approx 0{,}992$.
+\end{frame}
+
+%=====================================================================
+\section{Metodologia experimental}
+
+\begin{frame}{Protocolo de avaliação}
+  \begin{itemize}
+    \item Semente fixa: \texttt{random\_state=42}.
+    \item Hold-out estratificado (20\%): \textbf{1460} amostras --- só relatório final.
+    \item Desenvolvimento: \textbf{5840} amostras.
+    \item CV: \texttt{StratifiedKFold} (5 folds) por quantis de $\lambda_{res}$.
+    \item Em cada fold da CV: treino 4672 / teste 1168.
+    \item Nested CV para hiperparâmetros (scorer $=$ Jaccard top-$k$).
+    \item Sem SMOTE; hold-out nunca usado no ajuste.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Classificadores}
+  Seis métodos da disciplina, adaptados a multi-rótulo:
+  \vspace{0.4em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item kNN (+ scaler)
+        \item SVM RBF one-vs-rest
+        \item MLP (+ scaler)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item Random Forest
+        \item AdaBoost one-vs-rest
+        \item MQ / Ridge + top-$k$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.8em}
+  \textbf{Métricas:} Jaccard (principal), exact match, F1 micro/macro, Hamming.\\
+  Predição alinhada ao problema: \textbf{top-4 por score}.
+\end{frame}
+
+\begin{frame}{Ajuste de hiperparâmetros (resumo)}
+  \begin{itemize}
+    \item Nested CV no desenvolvimento (busca só no treino de cada fold).
+    \item Consenso estável do SVM: $C{=}10$, $\gamma{=}0{,}1$ (todos os folds).
+    \item Maior ganho do tuning: SVM Jaccard $0{,}961\rightarrow 0{,}974$ (+0{,}013).
+    \item Demais métodos: variação pequena após o ajuste.
+  \end{itemize}
+\end{frame}
+
+%=====================================================================
+\section{Resultados}
+
+\begin{frame}{Resultados --- CV (modelos afinados)}
+  \begin{table}
+    \centering
+    \scriptsize
+    \begin{tabular}{lcccc}
+      \toprule
+      Método & Jaccard & Exact & F1 mic. & Hamm. \\
+      \midrule
+      \textbf{SVM} & $\mathbf{0{,}974\pm0{,}003}$ & 0{,}935 & 0{,}984 & 0{,}010 \\
+      Random Forest & $0{,}973\pm0{,}002$ & 0{,}933 & 0{,}983 & 0{,}010 \\
+      AdaBoost & $0{,}973\pm0{,}004$ & 0{,}932 & 0{,}983 & 0{,}011 \\
+      MLP & $0{,}965\pm0{,}006$ & 0{,}912 & 0{,}978 & 0{,}014 \\
+      kNN & $0{,}964\pm0{,}002$ & 0{,}910 & 0{,}978 & 0{,}014 \\
+      MQ & $0{,}922\pm0{,}005$ & 0{,}805 & 0{,}951 & 0{,}030 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.3em}
+  \centering
+  \includegraphics[width=0.72\textwidth]{fig_metrics_classifiers.png}
+\end{frame}
+
+\begin{frame}{Resultados --- hold-out (avaliação única)}
+  Treino no desenvolvimento completo; teste no hold-out (1460):
+  \vspace{0.4em}
+  \begin{table}
+    \centering
+    \begin{tabular}{lccc}
+      \toprule
+      Método & Jaccard & Exact & F1 micro \\
+      \midrule
+      \textbf{SVM} & $\mathbf{0{,}975}$ & 0{,}938 & 0{,}985 \\
+      Random Forest & 0{,}974 & 0{,}936 & 0{,}984 \\
+      MLP & 0{,}974 & 0{,}934 & 0{,}984 \\
+      AdaBoost & 0{,}973 & 0{,}934 & 0{,}983 \\
+      kNN & 0{,}967 & 0{,}918 & 0{,}979 \\
+      MQ & 0{,}933 & 0{,}832 & 0{,}958 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{0.5em}
+  Ranking estável: \textbf{SVM} lidera também no hold-out.
+\end{frame}
+
+\begin{frame}{Exemplo: máscara verdadeira vs prevista}
+  \begin{center}
+    \includegraphics[width=0.92\textwidth]{fig_mask_true_vs_pred.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Análises adicionais}
+  \begin{itemize}
+    \item \textbf{Erros vs $\lambda_{res}$:} o pior bin não é a borda\\
+          ($\sim$1553--1564~nm, Jaccard $\approx 0{,}91$).
+    \item \textbf{$k\in\{3,4,5\}$:} SVM lidera; $k{=}3$ é mais fácil; mantemos $k{=}4$.
+    \item \textbf{+ posições FBG:} ajuda RF/MLP/AdaBoost/MQ; SVM quase neutro;\\
+          kNN \textbf{piora} ($-0{,}022$).
+  \end{itemize}
+  \vspace{0.3em}
+  \begin{center}
+    \includegraphics[width=0.58\textwidth]{fig_jaccard_vs_lambda.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Erro por canal (FBG)}
+  \begin{center}
+    \includegraphics[width=0.88\textwidth]{fig_error_heatmap_fbg.png}
+  \end{center}
+  \vspace{0.3em}
+  Canais raros (bordas do array) tendem a maior taxa de erro ---\\
+  coerente com o desbalanceamento do rótulo.
+\end{frame}
+
+%=====================================================================
+\section{Conclusão}
+
+\begin{frame}{Conclusão}
+  \begin{itemize}
+    \item Problema de RP bem posto: multi-rótulo top-4 sobre 13 potências.
+    \item Dados reais (7300 amostras úteis), CV + hold-out isolado.
+    \item Melhor método: \textbf{SVM RBF one-vs-rest} (Jaccard $\approx 0{,}975$ no hold-out).
+    \item MQ serve como baseline linear mais fraco.
+    \item Próximo passo natural: acoplar a máscara à regressão de $\lambda_{res}$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Agradecimentos}
+  \begin{center}
+    \Large Obrigado.\\[1.2em]
+    \normalsize
+    Agradecimento ao Dr.\ Felipe Oliveira Barino\\
+    pela autorização de uso dos dados.\\[1.5em]
+    \textbf{Perguntas?}
+  \end{center}
+\end{frame}
+
+\end{document}
