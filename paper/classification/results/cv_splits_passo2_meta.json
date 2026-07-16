@@ -5,53 +5,53 @@
     "n_repeats": 5,
     "n_lambda_bins": 10,
     "random_state": 42,
-    "stratify_by": "lambda_bins"
+    "stratify_by": "y_class"
   },
   "n_total": 7300,
   "n_dev": 5840,
   "n_holdout": 1460,
-  "n_unique_masks": 10,
+  "n_classes": 10,
   "n_lambda_bins_effective": 10,
-  "holdout_bin_counts": {
-    "0": 160,
-    "1": 160,
-    "2": 120,
-    "3": 160,
-    "4": 140,
-    "5": 140,
-    "6": 160,
-    "7": 140,
-    "8": 180,
-    "9": 100
+  "holdout_class_counts": {
+    "0": 104,
+    "1": 252,
+    "2": 418,
+    "3": 18,
+    "4": 300,
+    "5": 108,
+    "6": 47,
+    "7": 139,
+    "8": 54,
+    "9": 20
   },
-  "dev_bin_counts": {
-    "0": 640,
-    "1": 640,
-    "2": 480,
-    "3": 640,
-    "4": 560,
-    "5": 560,
-    "6": 640,
-    "7": 560,
-    "8": 720,
-    "9": 400
+  "dev_class_counts": {
+    "0": 416,
+    "1": 1005,
+    "2": 1671,
+    "3": 71,
+    "4": 1201,
+    "5": 434,
+    "6": 189,
+    "7": 557,
+    "8": 216,
+    "9": 80
   },
   "strategy_a": {
     "name": "StratifiedKFold",
     "n_folds": 5,
-    "min_test_pos_any_fbg": 12
+    "min_test_count_any_class": 14
   },
   "strategy_b": {
     "name": "RepeatedStratifiedKFold",
     "n_splits": 5,
     "n_repeats": 5,
     "n_evaluations": 25,
-    "min_test_pos_any_fbg": 10
+    "min_test_count_any_class": 14
   },
   "notes": [
-    "Estratificação por quantis de lambda_res (não por máscara).",
+    "Estratificação por y_class (10 janelas contíguas).",
     "Hold-out isolado: não entra em nenhum fold de A ou B.",
-    "SMOTE não aplicado neste passo (só metodologia de split).",
+    "lambda_bins salvos só para diagnóstico de cobertura espectral.",
     "Índices relativos ao prepared_measured_k4.npz."
   ],
   "coherence_ok": true
