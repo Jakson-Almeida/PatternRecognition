@@ -21,31 +21,56 @@ from src.tuned_models import build_tuned_classifiers
 
 
 def fig_schema(out: Path):
+    """Esquema: vale LPFG + 13 FBGs + janela-classe contígua."""
     data = load_prepared_dataset()
     wl_mean = np.asarray(data["wl_bragg"], dtype=float).mean(axis=0)
     lam = float(np.median(data["target"]))
-    # classe típica perto da mediana
     y = np.asarray(data["y_class"], dtype=int).ravel()
-    # pick a sample near median lambda
     target = np.asarray(data["target"], dtype=float).ravel()
     i = int(np.argmin(np.abs(target - lam)))
     s = int(y[i])
     active = set(range(s, s + K_DEFAULT))
+    lam_i = float(target[i])
 
     fig, ax = plt.subplots(figsize=(7.2, 3.2))
-    ax.axvline(target[i], color="#c44e52", ls="--", lw=1.5, label=r"$\lambda_{res}$")
+    # curva LPFG esquemática (Lorentziana invertida)
+    xs = np.linspace(wl_mean.min() - 5, wl_mean.max() + 5, 500)
+    dip = 1.0 / (1.0 + ((xs - lam_i) / 4.5) ** 2)
+    ax.plot(xs, 1 - 0.85 * dip, color="#2c3e50", lw=1.8, label="LPFG (esquema)")
+    ax.axvline(lam_i, color="#c44e52", ls="--", lw=1.2, label=r"$\lambda_{res}$")
+
     for j, w in enumerate(wl_mean):
-        color = "#4c72b0" if j in active else "#bbbbbb"
-        lw = 2.2 if j in active else 1.0
-        ax.plot([w, w], [0, 1], color=color, lw=lw)
-        ax.text(w, 1.05, str(j), ha="center", fontsize=8, color=color)
-    ax.set_ylim(0, 1.25)
+        selected = j in active
+        color = "#4c72b0" if selected else "#bbbbbb"
+        ax.plot(
+            [w, w],
+            [0.05, 0.95],
+            color=color,
+            lw=2.2 if selected else 1.0,
+            solid_capstyle="round",
+        )
+        ax.plot(
+            w,
+            0.08,
+            marker="o",
+            markersize=7 if selected else 5,
+            color="#4c72b0" if selected else "#888888",
+            markeredgecolor="black",
+            markeredgewidth=0.4,
+        )
+        ax.text(w, 1.02, str(j), ha="center", va="bottom", fontsize=7, color="#333333")
+
+    ax.set_xlim(xs.min(), xs.max())
+    ax.set_ylim(0, 1.15)
     ax.set_xlabel("Comprimento de onda (nm)")
-    ax.set_yticks([])
-    ax.set_title(f"Esquema: LPFG + 13 FBGs — classe C{s} = janela {{{','.join(map(str, range(s, s+4)))}}}")
+    ax.set_ylabel("Transmitância (u.a.)")
+    ax.set_title(
+        f"Esquema: LPFG + 13 FBGs — classe C{s} = janela "
+        f"{{{','.join(map(str, range(s, s + 4)))}}}"
+    )
     ax.plot([], [], color="#4c72b0", lw=2.2, label="FBG na janela")
     ax.plot([], [], color="#bbbbbb", lw=1.0, label="FBG fora")
-    ax.legend(fontsize=8, loc="upper right")
+    ax.legend(fontsize=8, loc="center right")
     fig.tight_layout()
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
