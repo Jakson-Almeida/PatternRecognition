@@ -1,9 +1,9 @@
 {
-  "cv_strategy": "A_StratifiedKFold",
+  "cv_strategy": "A_StratifiedKFold_by_y_class",
   "n_folds": 5,
-  "k": 4,
+  "n_classes": 10,
   "holdout_used": false,
-  "prediction": "top-k from scores (exactly k positives per sample)",
+  "prediction": "multiclass predict() -> window class 0..9",
   "classifiers": [
     "kNN",
     "SVM",
@@ -14,19 +14,19 @@
   ],
   "defaults": {
     "kNN": "n_neighbors=5, StandardScaler",
-    "SVM": "OvR RBF C=1.0, StandardScaler",
+    "SVM": "RBF C=1.0, StandardScaler",
     "MLP": "hidden=(64,32), early_stopping, StandardScaler",
-    "RandomForest": "n_estimators=100, multilabel nativo",
-      "AdaBoost": "OvR n_estimators=50",
-    "MQ": "MultiOutput LinearRegression + StandardScaler; top-k nos valores previstos"
+    "RandomForest": "n_estimators=100",
+    "AdaBoost": "n_estimators=50",
+    "MQ": "RidgeClassifier alpha=1.0 + StandardScaler"
   },
-  "ranking_by_jaccard_samples_mean": [
+  "ranking_by_accuracy_mean": [
     "RandomForest",
-    "AdaBoost",
     "MLP",
     "kNN",
     "SVM",
-    "MQ"
+    "MQ",
+    "AdaBoost"
   ],
   "smote": false
 }

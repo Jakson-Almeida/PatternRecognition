@@ -1,4 +1,4 @@
-"""Ajuste de hiperparâmetros com nested CV (Passo 4)."""
+"""Ajuste de hiperparâmetros com nested CV (Passo 4) — multiclasse."""
 
 from __future__ import annotations
 
@@ -6,26 +6,16 @@ from typing import Any
 
 import numpy as np
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.linear_model import Ridge
-from sklearn.metrics import jaccard_score
+from sklearn.linear_model import RidgeClassifier
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
-from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-from sklearn.multiclass import OneVsRestClassifier
 
-from .classifiers import predict_topk_mask
-from .data_utils import K_DEFAULT, RANDOM_STATE
-from .metrics_utils import evaluate_multilabel
-
-
-def topk_jaccard_scorer(estimator, X, y) -> float:
-    """Scorer do GridSearch: Jaccard samples após top-k nos scores."""
-    y_pred = predict_topk_mask(estimator, X, k=K_DEFAULT)
-    return float(jaccard_score(y, y_pred, average="samples", zero_division=0))
+from .data_utils import RANDOM_STATE
+from .metrics_utils import evaluate_multiclass
 
 
 def _pipe(estimator) -> Pipeline:
@@ -33,12 +23,6 @@ def _pipe(estimator) -> Pipeline:
 
 
 def build_search_spaces(random_state: int = RANDOM_STATE) -> dict[str, dict[str, Any]]:
-    """
-    Estimador base + grade compacta por método.
-
-    MQ: Ridge (L2) — LinearRegression do Passo 3 não tem hiperparâmetro;
-    a busca usa regularização, ainda na família de mínimos quadrados.
-    """
     return {
         "kNN": {
             "estimator": _pipe(KNeighborsClassifier(metric="minkowski", p=2)),
@@ -48,15 +32,10 @@ def build_search_spaces(random_state: int = RANDOM_STATE) -> dict[str, dict[str,
             },
         },
         "SVM": {
-            "estimator": _pipe(
-                OneVsRestClassifier(
-                    SVC(kernel="rbf", random_state=random_state),
-                    n_jobs=1,
-                )
-            ),
+            "estimator": _pipe(SVC(kernel="rbf", random_state=random_state)),
             "param_grid": {
-                "clf__estimator__C": [0.1, 1.0, 10.0],
-                "clf__estimator__gamma": ["scale", 0.1],
+                "clf__C": [0.1, 1.0, 10.0],
+                "clf__gamma": ["scale", 0.1],
             },
         },
         "MLP": {
@@ -76,10 +55,7 @@ def build_search_spaces(random_state: int = RANDOM_STATE) -> dict[str, dict[str,
             },
         },
         "RandomForest": {
-            "estimator": RandomForestClassifier(
-                n_jobs=1,
-                random_state=random_state,
-            ),
+            "estimator": RandomForestClassifier(n_jobs=1, random_state=random_state),
             "param_grid": {
                 "n_estimators": [100, 200],
                 "max_depth": [None, 10, 20],
@@ -87,19 +63,16 @@ def build_search_spaces(random_state: int = RANDOM_STATE) -> dict[str, dict[str,
             },
         },
         "AdaBoost": {
-            "estimator": OneVsRestClassifier(
-                AdaBoostClassifier(random_state=random_state),
-                n_jobs=1,
-            ),
+            "estimator": AdaBoostClassifier(random_state=random_state),
             "param_grid": {
-                "estimator__n_estimators": [30, 50, 100],
-                "estimator__learning_rate": [0.5, 1.0],
+                "n_estimators": [30, 50, 100],
+                "learning_rate": [0.5, 1.0],
             },
         },
         "MQ": {
-            "estimator": _pipe(MultiOutputRegressor(Ridge(), n_jobs=1)),
+            "estimator": _pipe(RidgeClassifier(random_state=random_state)),
             "param_grid": {
-                "clf__estimator__alpha": [0.01, 0.1, 1.0, 10.0, 100.0],
+                "clf__alpha": [0.01, 0.1, 1.0, 10.0, 100.0],
             },
         },
     }
@@ -117,15 +90,10 @@ def nested_tune_fold(
     *,
     inner_splits: int = 3,
     random_state: int = RANDOM_STATE,
-    k: int = K_DEFAULT,
 ) -> dict[str, Any]:
-    """
-    Inner GridSearchCV no treino do fold externo; avalia no teste externo.
-
-    Hold-out nunca entra aqui.
-    """
-    y_train = np.asarray(y_train).astype(int)
-    y_test = np.asarray(y_test).astype(int)
+    """Inner GridSearchCV (accuracy); avalia no teste externo."""
+    y_train = np.asarray(y_train).astype(int).ravel()
+    y_test = np.asarray(y_test).astype(int).ravel()
     stratify_train = np.asarray(stratify_train).ravel()
 
     inner = StratifiedKFold(
@@ -136,7 +104,7 @@ def nested_tune_fold(
     search = GridSearchCV(
         estimator=estimator,
         param_grid=param_grid,
-        scoring=topk_jaccard_scorer,
+        scoring="accuracy",
         cv=inner_cv,
         refit=True,
         n_jobs=-1,
@@ -144,12 +112,12 @@ def nested_tune_fold(
     )
     search.fit(X_train, y_train)
 
-    y_pred = predict_topk_mask(search.best_estimator_, X_test, k=k)
-    metrics = evaluate_multilabel(y_test, y_pred)
+    y_pred = np.asarray(search.best_estimator_.predict(X_test), dtype=int).ravel()
+    metrics = evaluate_multiclass(y_test, y_pred)
     return {
         "classifier": name,
         "best_params": search.best_params_,
-        "best_inner_jaccard": float(search.best_score_),
+        "best_inner_accuracy": float(search.best_score_),
         "metrics": metrics,
         "n_candidates": int(len(search.cv_results_["params"])),
     }
