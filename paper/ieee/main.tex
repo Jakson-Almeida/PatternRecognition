@@ -76,7 +76,15 @@ O classificador recebe $\mathbf{x}$ e prediz $s$; a máscara implícita é $C_s$
 Usamos o conjunto medido disponibilizado em~\cite{Barino2025TIM} (autorização de uso para este trabalho).
 Há $8200$ amostras; após o filtro $1515<\lambda_{res}<1585$~nm restam $7300$.
 As potências são normalizadas por amostra (subtração do mínimo e soma unitária), como em~\cite{Barino2025TIM}.
+A Fig.~\ref{fig:heatmap} ilustra o banco analisado: $73$ amostras (espalhadas ao longo do intervalo de $\lambda_{res}$) $\times$ $13$ potências FBG; o valor de $\lambda_{res}$ em si não aparece na figura.
 As dez classes são desbalanceadas (ex.: $C_2$ com ${\approx}29\%$ das amostras e $C_3$ com ${\approx}1{,}2\%$).
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig_fbg_power_heatmap_73x13.png}
+\caption{Amostra do conjunto: potências FBG normalizadas ($73$ de $7300$ amostras). A diagonal clara mostra o deslocamento do padrão de potência pelo array; $\lambda_{res}$ não é exibido.}
+\label{fig:heatmap}
+\end{figure}
 
 \subsection{Classificadores}
 Comparamos: kNN; SVM RBF; MLP; Random Forest; AdaBoost; e RidgeClassifier (MQ/linear).
