@@ -6,11 +6,13 @@ Este guia organiza os passos para construir o classificador, avaliar os resultad
 
 ## 1. Objetivo do trabalho
 
-Desenvolver um **sistema de reconhecimento de padrões** que, a partir das potências ópticas medidas por um array de FBGs, **classifique quais FBGs são as mais relevantes** para localizar o vale ressonante de um sensor LPFG.
+Desenvolver um **sistema de reconhecimento de padrões** que, a partir das potências ópticas medidas por um array de FBGs, **classifique a janela de 4 FBGs contíguas** mais relevantes para localizar o vale ressonante de um sensor LPFG.
+
+**Formulação oficial:** multiclasse com **10 classes** \(C_s=\{s,\ldots,s+3\}\), \(s\in\{0,\ldots,9\}\) (derivada da máscara top-4, 100% contígua nos dados filtrados).
 
 Isso corresponde à **Parte 1** da ideia discutida com o Dr. Felipe Barino:
 
-1. **Classificação** — selecionar as FBGs mais próximas do vale da LPG (máscara).
+1. **Classificação** — selecionar a janela de FBGs próximas do vale da LPG.
 2. **Interrogação / regressão** — estimar \lambda_{res} (já feita no paper do Barino; opcional no seu artigo como discussão).
 
 **Entregas da disciplina**

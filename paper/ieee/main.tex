@@ -13,7 +13,7 @@
 
 \begin{document}
 
-\title{Classificação multi-rótulo de FBGs relevantes para demodulação de sensores LPFG}
+\title{Classificação multiclasse de janelas de FBGs para demodulação de sensores LPFG}
 
 \author{
 \IEEEauthorblockN{Jakson da Rocha Almeida}
@@ -26,48 +26,47 @@ Juiz de Fora, MG, Brasil}
 \begin{abstract}
 Sensores baseados em redes de período longo (LPFG) são úteis, mas sua interrogação por analisador óptico de espectro é cara.
 Uma alternativa é modular o espectro da LPFG com um array de redes de Bragg (FBG) e estimar o comprimento de onda ressonante $\lambda_{res}$ por aprendizado de máquina.
-Este trabalho aborda a seleção das FBGs mais próximas de $\lambda_{res}$ como classificação multi-rótulo: a partir das potências ópticas normalizadas de 13 FBGs, prediz-se uma máscara top-$k$ ($k{=}4$).
-Seis classificadores clássicos foram avaliados com validação cruzada estratificada e hold-out isolado, sobre dados reais autorizados.
-Com hiperparâmetros ajustados por nested CV, o SVM one-vs-rest obteve Jaccard médio de $0{,}974$ na CV e $0{,}975$ no hold-out.
-A análise mostra que o pior desempenho não ocorre nas bordas espectrais e que incluir as posições das FBGs beneficia alguns métodos, mas não o SVM.
+Observamos que a máscara das quatro FBGs mais próximas de $\lambda_{res}$ é sempre uma janela contígua no array; isso reduz o problema a \textbf{dez classes} $C_s=\{s,\ldots,s+3\}$, $s\in\{0,\ldots,9\}$.
+Seis classificadores clássicos foram avaliados com validação cruzada estratificada por classe e hold-out isolado, sobre dados reais autorizados.
+Com hiperparâmetros ajustados por nested CV (scorer $=$ acurácia), o SVM RBF obteve acurácia média de $0{,}934$ na CV e $0{,}938$ no hold-out (empatado com Random Forest no teste final).
+A análise mostra desbalanceamento acentuado entre classes e ganho de incluir as posições Bragg em alguns métodos.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Classificação multi-rótulo, FBG, LPFG, reconhecimento de padrões, sensores ópticos.
+Classificação multiclasse, FBG, LPFG, reconhecimento de padrões, sensores ópticos.
 \end{IEEEkeywords}
 
 \section{Introdução}
 
-Redes de período longo em fibra (LPFG) formam sensores versáteis para grandezas como índice de refração e temperatura~\cite{James1996LPFG}.
-Contudo, a leitura convencional do vale ressonante exige instrumentação espectral de alto custo.
-Redes de Bragg (FBG) são amplamente usadas em sensores e filtros~\cite{Kersey1997FBG} e podem atuar como banco de filtros estáticos para modular o espectro da LPFG~\cite{Barino2020Sensors,Barino2025TIM}.
+Redes de período longo em fibra (LPFG) formam sensores versáteis~\cite{James1996LPFG}, porém a leitura convencional do vale ressonante exige instrumentação espectral de alto custo.
+Redes de Bragg (FBG) podem atuar como banco de filtros para modular o espectro da LPFG~\cite{Kersey1997FBG,Barino2020Sensors,Barino2025TIM}.
 
-Barino e dos Santos demonstraram demodulação de LPFG a partir das potências de um array de FBGs com uma rede neural com autoatenção~\cite{Barino2025TIM}.
-A atenção sugere que apenas um subconjunto de FBGs é relevante para localizar $\lambda_{res}$.
-Motivados por essa observação, formulamos explicitamente a \emph{Parte~1} do problema: classificar quais FBGs devem compor a máscara de interesse antes de uma eventual interrogação/regressão (Parte~2).
+Barino e dos Santos demonstraram demodulação de LPFG a partir das potências de um array de FBGs com uma rede com autoatenção~\cite{Barino2025TIM}.
+Motivados pela ideia de que apenas um subconjunto de FBGs é relevante, formulamos a \emph{Parte~1}: classificar a \textbf{janela} de FBGs de interesse antes de uma eventual interrogação/regressão (Parte~2).
 
-\textbf{Contribuições:} (i)~definição multi-rótulo da máscara top-$k$ a partir de dados reais; (ii)~comparação de seis classificadores da disciplina com CV aninhada e hold-out; (iii)~análise de erros versus $\lambda_{res}$, de $k\in\{3,4,5\}$ e do uso das posições FBG.
+\textbf{Contribuições:} (i)~redução do problema a $10$ classes de janelas contíguas a partir de dados reais; (ii)~comparação de seis classificadores da disciplina com CV aninhada e hold-out; (iii)~análise de erros versus $\lambda_{res}$ e do uso das posições FBG.
 
 \section{Trabalhos relacionados}
 
 A interrogação de LPFG com arrays FBG e aprendizado de máquina foi explorada em~\cite{Barino2020Sensors,Barino2024LAWOFS,Barino2025TIM}, com ênfase na estimação de $\lambda_{res}$.
-O presente trabalho não substitui esses modelos de regressão: concentra-se na seleção das FBGs relevantes, alinhada à ideia de filtragem dinâmica por atenção.
+O presente trabalho não substitui esses modelos de regressão: concentra-se na seleção das FBGs relevantes.
 
-A classificação multi-rótulo admite métricas específicas (Hamming, Jaccard por amostra, exact match)~\cite{Tsoumakas2007ML,Zhang2014ML}.
-Empregamos métodos clássicos --- kNN, SVM~\cite{Cortes1995SVM}, MLP, florestas aleatórias~\cite{Breiman2001RF}, AdaBoost e mínimos quadrados --- conforme o repertório da disciplina e práticas de avaliação estatística~\cite{Hastie2009ESL}.
+Empregamos métodos clássicos --- kNN, SVM~\cite{Cortes1995SVM}, MLP, florestas aleatórias~\cite{Breiman2001RF}, AdaBoost e classificador linear (Ridge) --- conforme o repertório da disciplina e práticas de avaliação estatística~\cite{Hastie2009ESL}.
 
 \section{Formulação do problema}
 
 Cada amostra $n$ fornece potências $\mathbf{x}^{(n)}\in\mathbb{R}^{13}$, posições $\boldsymbol{\lambda}_{\mathrm{FBG}}^{(n)}\in\mathbb{R}^{13}$ e o alvo $\lambda_{res}^{(n)}$.
-Define-se o erro $e_i=|\lambda_{\mathrm{FBG},i}-\lambda_{res}|$ e a máscara $y\in\{0,1\}^{13}$ com $y_i=1$ nos $k$ índices de menor $e_i$ (Fig.~\ref{fig:schema}).
-Adotamos $k{=}4$ como configuração principal, coerente com a heurística discutida com o autor dos dados.
-
-O classificador recebe $\mathbf{x}$ (potências normalizadas) e produz escores por canal; a predição final seleciona os $k$ maiores escores, garantindo cardinalidade fixa e alinhamento ao rótulo.
+Define-se o erro $e_i=|\lambda_{\mathrm{FBG},i}-\lambda_{res}|$ e a máscara top-$4$ nos menores $e_i$.
+No conjunto filtrado, essa máscara é \emph{sempre} uma janela contígua; portanto o rótulo oficial é a classe
+\begin{equation}
+y = s \in \{0,\ldots,9\}, \qquad C_s=\{s,s+1,s+2,s+3\}.
+\end{equation}
+O classificador recebe $\mathbf{x}$ e prediz $s$; a máscara implícita é $C_s$ (Fig.~\ref{fig:schema}).
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig_schema_lpg_fbg.png}
-\caption{Esquema da LPFG, do array de 13 FBGs e da máscara top-4 em torno de $\lambda_{res}$.}
+\caption{Esquema da LPFG, do array de 13 FBGs e de uma janela-classe em torno de $\lambda_{res}$.}
 \label{fig:schema}
 \end{figure}
 
@@ -75,44 +74,44 @@ O classificador recebe $\mathbf{x}$ (potências normalizadas) e produz escores p
 
 \subsection{Dados e pré-processamento}
 Usamos o conjunto medido disponibilizado em~\cite{Barino2025TIM} (autorização de uso para este trabalho).
-Há $8200$ amostras; após o filtro aberto $1515<\lambda_{res}<1585$~nm restam $7300$.
-As potências são normalizadas por amostra (subtração do mínimo e soma unitária), como no pipeline de avaliação de~\cite{Barino2025TIM}.
-A máscara top-4 é desbalanceada por canal: FBGs centrais são positivas com bem maior frequência que as das bordas do array.
+Há $8200$ amostras; após o filtro $1515<\lambda_{res}<1585$~nm restam $7300$.
+As potências são normalizadas por amostra (subtração do mínimo e soma unitária), como em~\cite{Barino2025TIM}.
+As dez classes são desbalanceadas (ex.: $C_2$ com ${\approx}29\%$ das amostras e $C_3$ com ${\approx}1{,}2\%$).
 
 \subsection{Classificadores}
-Comparamos: kNN; SVM RBF em one-vs-rest; MLP; Random Forest; AdaBoost em one-vs-rest; e regressão linear multi-saída (MQ), com top-$k$ nos valores previstos.
+Comparamos: kNN; SVM RBF; MLP; Random Forest; AdaBoost; e RidgeClassifier (MQ/linear).
 kNN, SVM, MLP e MQ usam \texttt{StandardScaler} ajustado apenas no treino de cada fold.
 
 \subsection{Avaliação}
-Reservamos $20\%$ das amostras como hold-out estratificado por quantis de $\lambda_{res}$ ($1460$ amostras), sem uso em ajuste.
-No desenvolvimento ($5840$), usamos \texttt{StratifiedKFold} com $5$ folds (estratégia A).
-Hiperparâmetros foram escolhidos por nested CV (\texttt{GridSearchCV} interno de $3$ folds, scorer $=$ Jaccard top-$k$).
-A métrica principal é o Jaccard por amostra; reportamos também exact match, F1 micro/macro e Hamming.
-Após o tuning, os modelos de consenso foram retreinados no desenvolvimento completo e avaliados \emph{uma única vez} no hold-out.
+Reservamos $20\%$ como hold-out estratificado por \textbf{classe} ($1460$ amostras).
+No desenvolvimento ($5840$), usamos \texttt{StratifiedKFold} com $5$ folds.
+Hiperparâmetros foram escolhidos por nested CV (\texttt{GridSearchCV} interno de $3$ folds, scorer $=$ acurácia).
+Métricas principais: acurácia, F1 macro e F1 weighted; matrizes de confusão $10\times 10$.
+Após o tuning, os modelos de consenso foram retreinados no desenvolvimento e avaliados uma única vez no hold-out.
 
 \section{Resultados}
 
 \subsection{Desempenho principal}
-A Tabela~\ref{tab:cv} resume a CV com modelos afinados ($k{=}4$, só potências).
-O SVM lidera em Jaccard ($0{,}974\pm0{,}003$), seguido de perto por Random Forest e AdaBoost.
-O MQ permanece como baseline linear mais fraco.
-No hold-out (Tabela~\ref{tab:hold}), a ordem se mantém: SVM com Jaccard $0{,}975$, confirmando generalização sem retuning no teste final.
+A Tabela~\ref{tab:cv} resume a CV com modelos afinados (só potências).
+O SVM lidera em acurácia ($0{,}934\pm0{,}004$), seguido de Random Forest e MLP.
+O baseline linear (MQ) e o AdaBoost ficam claramente atrás.
+No hold-out (Tabela~\ref{tab:hold}), SVM e Random Forest empatam em $0{,}938$.
 
 \begin{table}[!t]
-\caption{CV estratégia A (média $\pm$ desvio, $k{=}4$).}
+\caption{CV estratificada (média $\pm$ desvio).}
 \label{tab:cv}
 \centering
 \setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccc}
 \toprule
-Método & Jaccard & Exact & F1 mic. & Hamm. \\
+Método & Acurácia & F1 weight. & F1 macro \\
 \midrule
-SVM & $\mathbf{0{,}974\pm0{,}003}$ & $0{,}935$ & $0{,}984$ & $0{,}010$ \\
-RF & $0{,}973\pm0{,}002$ & $0{,}933$ & $0{,}983$ & $0{,}010$ \\
-AdaBoost & $0{,}973\pm0{,}004$ & $0{,}932$ & $0{,}983$ & $0{,}011$ \\
-MLP & $0{,}965\pm0{,}006$ & $0{,}912$ & $0{,}978$ & $0{,}014$ \\
-kNN & $0{,}964\pm0{,}002$ & $0{,}910$ & $0{,}978$ & $0{,}014$ \\
-MQ & $0{,}922\pm0{,}005$ & $0{,}805$ & $0{,}951$ & $0{,}030$ \\
+SVM & $\mathbf{0{,}934\pm0{,}004}$ & $0{,}927$ & $0{,}866$ \\
+RF & $0{,}929\pm0{,}003$ & $0{,}923$ & $0{,}857$ \\
+MLP & $0{,}919\pm0{,}010$ & $0{,}908$ & $0{,}819$ \\
+kNN & $0{,}907\pm0{,}003$ & $0{,}901$ & $0{,}830$ \\
+MQ & $0{,}779\pm0{,}006$ & $0{,}736$ & $0{,}580$ \\
+AdaBoost & $0{,}650\pm0{,}010$ & $0{,}554$ & $0{,}365$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -124,72 +123,66 @@ MQ & $0{,}922\pm0{,}005$ & $0{,}805$ & $0{,}951$ & $0{,}030$ \\
 \setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lccc}
 \toprule
-Método & Jaccard & Exact & F1 micro \\
+Método & Acurácia & F1 weight. & F1 macro \\
 \midrule
-SVM & $\mathbf{0{,}975}$ & $0{,}938$ & $0{,}985$ \\
-RF & $0{,}974$ & $0{,}936$ & $0{,}984$ \\
-MLP & $0{,}974$ & $0{,}934$ & $0{,}984$ \\
-AdaBoost & $0{,}973$ & $0{,}934$ & $0{,}983$ \\
-kNN & $0{,}967$ & $0{,}918$ & $0{,}979$ \\
-MQ & $0{,}933$ & $0{,}832$ & $0{,}958$ \\
+SVM & $\mathbf{0{,}938}$ & $0{,}931$ & $0{,}874$ \\
+RF & $\mathbf{0{,}938}$ & $0{,}932$ & $0{,}878$ \\
+MLP & $0{,}933$ & $0{,}923$ & $0{,}846$ \\
+kNN & $0{,}919$ & $0{,}911$ & $0{,}824$ \\
+MQ & $0{,}789$ & $0{,}750$ & $0{,}613$ \\
+AdaBoost & $0{,}543$ & $0{,}409$ & $0{,}209$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-A Fig.~\ref{fig:metrics} compara as métricas na CV; a Fig.~\ref{fig:example} ilustra um acerto e um erro típico do SVM.
+A Fig.~\ref{fig:metrics} compara as métricas na CV; a Fig.~\ref{fig:example} ilustra janela verdadeira versus prevista (SVM).
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig_metrics_classifiers.png}
-\caption{Comparação dos seis métodos na CV ($k{=}4$).}
+\caption{Comparação dos seis métodos na CV (acurácia).}
 \label{fig:metrics}
 \end{figure}
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig_mask_true_vs_pred.png}
-\caption{Exemplo real: máscara verdadeira versus prevista (SVM).}
+\caption{Exemplo real: janela verdadeira versus prevista (SVM).}
 \label{fig:example}
 \end{figure}
 
 \subsection{Análise crítica}
 \textbf{Erros versus $\lambda_{res}$.}
-A hipótese de piora nas bordas espectrais não se confirma: para o SVM, o bin mais difícil situa-se em torno de $1553$--$1564$~nm (Jaccard ${\approx}0{,}91$), enquanto bordas e centro permanecem ${\geq}0{,}97$ (Fig.~\ref{fig:lambda}).
-
-\textbf{Efeito de $k$.}
-Para $k\in\{3,4,5\}$, o SVM permanece o melhor; o Jaccard é mais alto em $k{=}3$ ($0{,}985$), o que é esperado por ser um problema de menor cardinalidade.
-Mantemos $k{=}4$ por alinhamento à heurística alvo.
+Para o SVM, os bins mais difíceis situam-se em torno de $1548$--$1580$~nm (acurácia ${\approx}0{,}87$), enquanto a faixa $1531$--$1534$~nm atinge ${\approx}0{,}996$ (Fig.~\ref{fig:lambda}).
 
 \textbf{Posições FBG.}
-Concatenar $\boldsymbol{\lambda}_{\mathrm{FBG}}$ às potências melhora RF, AdaBoost, MLP e MQ (${\approx}{+}0{,}008$ a ${+}0{,}015$ em Jaccard), é quase neutro para o SVM e \emph{prejudica} o kNN ($-0{,}022$).
-Com posições, a RF atinge ${\approx}0{,}981$ na CV.
+Concatenar $\boldsymbol{\lambda}_{\mathrm{FBG}}$ às potências melhora MLP (${+}0{,}029$), RF (${+}0{,}019$) e MQ (${+}0{,}041$), é quase neutro para o SVM e \emph{prejudica} o kNN ($-0{,}050$).
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=\columnwidth]{fig_jaccard_vs_lambda.png}
-\caption{Jaccard médio por bin de $\lambda_{res}$ (CV empilhada).}
+\includegraphics[width=\columnwidth]{fig_acc_vs_lambda.png}
+\caption{Acurácia média por bin de $\lambda_{res}$ (CV empilhada, SVM).}
 \label{fig:lambda}
 \end{figure}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.95\columnwidth]{fig_error_heatmap_fbg.png}
-\caption{Taxa de erro por canal FBG.}
-\label{fig:heatmap}
+\includegraphics[width=\columnwidth]{cm_agg_all_classifiers_pct.png}
+\caption{Matrizes de confusão $10\times 10$ normalizadas por linha (hold-out).}
+\label{fig:cm}
 \end{figure}
-
-A Fig.~\ref{fig:heatmap} evidencia erros maiores em canais com suporte positivo baixo (bordas do array), coerente com o desbalanceamento da máscara.
 
 \section{Discussão}
 
-A classificação da máscara é resolúvel com métodos clássicos e alto Jaccard, o que reforça a viabilidade de uma arquitetura em duas etapas: seleção de FBGs seguida de estimação de $\lambda_{res}$ (como em~\cite{Barino2025TIM}).
-Limitações: não medimos ainda o impacto da máscara na regressão; não exploramos SMOTE multi-rótulo.
+A formulação multiclasse torna explícito o conjunto de decisões possíveis e alinha a avaliação à disciplina (acurácia e matriz de confusão).
+O desempenho elevado do SVM/RF reforça a viabilidade de uma arquitetura em duas etapas: seleção da janela seguida de estimação de $\lambda_{res}$~\cite{Barino2025TIM}.
+Limitações: classes raras ($C_3$, $C_9$); impacto na regressão ainda não medido; AdaBoost fraco neste problema.
 
 \section{Conclusão}
 
-Formulamos e avaliamos a seleção de FBGs relevantes à demodulação de LPFG como classificação multi-rótulo top-$4$.
-Com dados reais, nested CV e hold-out isolado, o SVM RBF one-vs-rest obteve o melhor compromisso (Jaccard ${\approx}0{,}975$ no hold-out).
-Próximos passos incluem acoplar a máscara ao modelo de interrogação e avaliar o ganho em RMSE de $\lambda_{res}$.
+Formulamos a seleção de FBGs relevantes à demodulação de LPFG como classificação multiclasse com $10$ janelas contíguas.
+Com dados reais, nested CV e hold-out isolado, SVM e Random Forest obtiveram acurácia ${\approx}0{,}938$ no hold-out.
+Próximos passos incluem acoplar a janela ao modelo de interrogação e avaliar o ganho em RMSE de $\lambda_{res}$.
 
 \section*{Agradecimentos}
 Agradecemos ao Dr.~Felipe Oliveira Barino pela autorização de uso dos dados e código associados a~\cite{Barino2025TIM}.
