@@ -1,33 +1,32 @@
 {
   "source": "paper/fbg-demodulated-lpfg/data/measured.dataset",
+  "formulation": "multiclass_contiguous_window",
   "n_raw": 8200,
   "n_kept": 7300,
   "n_removed": 900,
   "n_fbgs": 13,
   "k": 4,
+  "n_classes": 10,
   "wl_range_nm": [
     1515.0,
     1585.0
   ],
   "random_state": 42,
   "X": "input_strength normalizado (min-subtract + soma=1)",
-  "y_mask": "multi-rótulo top-4 por |wl_bragg - target|",
-  "mask_positive_fraction_per_fbg": [
-    0.07123287671232877,
-    0.24342465753424658,
-    0.5295890410958904,
-    0.5417808219178082,
-    0.6761643835616439,
-    0.5782191780821918,
-    0.32438356164383564,
-    0.4075342465753425,
-    0.2389041095890411,
-    0.17835616438356164,
-    0.14602739726027397,
-    0.050684931506849315,
-    0.0136986301369863
+  "y_class": "classe s em 0..9; janela FBGs {s..s+3}",
+  "y_mask": "máscara equivalente top-4 / janela contígua",
+  "class_counts": [
+    520,
+    1257,
+    2089,
+    89,
+    1501,
+    542,
+    236,
+    696,
+    270,
+    100
   ],
-  "n_samples_with_tie_at_kth": 0,
   "coherence_checks_passed": true,
   "corr_wl_mean_vs_mean_res_when_pos": 0.9923246949471511
 }

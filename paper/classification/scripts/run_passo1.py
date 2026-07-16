@@ -1,4 +1,4 @@
-"""Executa Passo 1: pré-processamento, checagens e salvamento (dados reais)."""
+"""Executa Passo 1: pré-processamento, rótulos multiclasse e salvamento."""
 
 from __future__ import annotations
 
@@ -19,11 +19,15 @@ sys.path.insert(0, str(ROOT))
 from src.data_utils import (
     FIGURES_DIR,
     K_DEFAULT,
+    N_CLASSES,
+    N_FBGS,
     RANDOM_STATE,
     RESULTS_DIR,
     WL_RANGE,
+    class_to_mask,
     load_prepared_dataset,
     load_measured_dataset,
+    mask_to_window_class,
     prepare_measured_classification,
     save_prepared_dataset,
 )
@@ -61,16 +65,19 @@ def main() -> None:
     data = prepare_measured_classification(k=k, wl_range=WL_RANGE)
     x = data["X"]
     y_mask = data["y_mask"]
+    y_class = np.asarray(data["y_class"], dtype=int).ravel()
     wl = data["wl_bragg"]
     target = data["target"]
     keep = data["keep"]
+    n_classes = int(data["n_classes"])
 
     print("=== Após pipeline ===")
     print(
         f"n_raw={int(data['n_raw'])}, n_kept={int(data['n_kept'])}, "
         f"removidas={int(data['n_raw'] - data['n_kept'])}"
     )
-    print(f"X={x.shape}, y_mask={y_mask.shape}")
+    print(f"X={x.shape}, y_mask={y_mask.shape}, y_class={y_class.shape}")
+    print(f"n_classes={n_classes} (esperado {N_CLASSES})")
     print(f"lambda filtrado: min={target.min():.6f}, max={target.max():.6f}")
 
     checks: dict[str, bool | int] = {}
@@ -97,29 +104,14 @@ def main() -> None:
     )
     checks["mascara_coincide_topk"] = bool(same_sets)
 
-    topk_sort = np.argsort(err, axis=1)[:, :k]
-    mask_sort = np.zeros_like(y_mask)
-    mask_sort[np.arange(len(target)).reshape(-1, 1), topk_sort] = 1
-    same_sort = all(
-        set(np.flatnonzero(y_mask[i])) == set(np.flatnonzero(mask_sort[i]))
-        for i in range(len(target))
+    y_from_mask = mask_to_window_class(y_mask, k=k)
+    checks["y_class_bate_com_mascara"] = bool(np.array_equal(y_class, y_from_mask))
+    checks["bijecao_classe_mascara"] = bool(
+        np.array_equal(class_to_mask(y_class, n_fbgs=N_FBGS, k=k), y_mask)
     )
-    checks["mascara_coincide_argsort"] = bool(same_sort)
-
-    kth_err = np.partition(err, k - 1, axis=1)[:, k - 1]
-    n_at_kth = (err <= kth_err.reshape(-1, 1) + 1e-15).sum(axis=1)
-    n_ties = int((n_at_kth > k).sum())
-    checks["amostras_com_empate_no_limiar_k"] = n_ties
-
-    ok_sep = True
-    n_sep_fail = 0
-    for i in range(len(target)):
-        sel = y_mask[i].astype(bool)
-        if err[i, sel].max() > err[i, ~sel].min() + 1e-12 and n_at_kth[i] <= k:
-            ok_sep = False
-            n_sep_fail += 1
-    checks["max_sel_leq_min_unsel_sem_empate"] = bool(ok_sep)
-    checks["n_sep_fail"] = n_sep_fail
+    checks["n_classes_esperado"] = bool(n_classes == N_CLASSES)
+    checks["classes_em_0_a_9"] = bool(y_class.min() == 0 and y_class.max() == N_CLASSES - 1)
+    checks["todas_as_10_classes_presentes"] = bool(len(np.unique(y_class)) == N_CLASSES)
 
     print("Checagens:")
     for name, ok in checks.items():
@@ -131,39 +123,35 @@ def main() -> None:
     bool_checks = {key: val for key, val in checks.items() if isinstance(val, bool)}
     assert all(bool_checks.values()), "Falha de coerência"
 
-    freq = y_mask.mean(axis=0)
-    count = y_mask.sum(axis=0)
-    bal = pd.DataFrame(
+    counts = np.bincount(y_class, minlength=N_CLASSES)
+    class_bal = pd.DataFrame(
         {
-            "fbg_index": np.arange(13),
-            "n_positivo": count.astype(int),
+            "class": np.arange(N_CLASSES),
+            "window": [f"{{{','.join(map(str, range(s, s + k)))}}}" for s in range(N_CLASSES)],
+            "n": counts.astype(int),
+            "frac": np.round(counts / len(y_class), 4),
+        }
+    )
+    print(class_bal.to_string(index=False))
+    assert int(counts.sum()) == len(y_class)
+
+    # balanceamento por FBG (máscara derivada) — diagnóstico
+    freq = y_mask.mean(axis=0)
+    bal_fbg = pd.DataFrame(
+        {
+            "fbg_index": np.arange(N_FBGS),
+            "n_positivo": y_mask.sum(axis=0).astype(int),
             "fracao_positivo": np.round(freq, 4),
             "wl_bragg_media_nm": np.round(wl.mean(axis=0), 3),
         }
     )
-    print(f"Esperado uniforme k/13={k / 13:.4f}")
-    print(f"std frações={freq.std(ddof=0):.4f}")
-    print(bal.to_string(index=False))
-    print("wl_bragg std por FBG:", np.round(wl.std(axis=0), 4))
-    print("wl_bragg min/max global:", float(wl.min()), float(wl.max()))
-
-    mean_res_when_pos = []
-    for j in range(13):
-        sel = y_mask[:, j] == 1
-        mean_res_when_pos.append(target[sel].mean() if sel.any() else np.nan)
-    mean_res_when_pos = np.array(mean_res_when_pos)
-    wl_mean = wl.mean(axis=0)
-    corr = float(np.corrcoef(wl_mean, mean_res_when_pos)[0, 1])
-    print("corr(wl_mean, mean_res_when_pos)=", corr)
-    print("diff mean_res - wl_mean:", np.round(mean_res_when_pos - wl_mean, 3))
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.6))
-    axes[0].bar(np.arange(13), freq, color="#4c72b0", edgecolor="black", linewidth=0.4)
-    axes[0].axhline(k / 13, color="C3", ls="--", label=f"uniforme k/13={k / 13:.3f}")
-    axes[0].set_xlabel("Índice do FBG")
-    axes[0].set_ylabel("Fração com rótulo 1")
-    axes[0].set_title(f"Frequência da máscara top-{k}")
-    axes[0].legend(fontsize=8)
+    axes[0].bar(np.arange(N_CLASSES), counts, color="#4c72b0", edgecolor="black", linewidth=0.4)
+    axes[0].set_xlabel("Classe (início da janela)")
+    axes[0].set_ylabel("Contagem")
+    axes[0].set_title(f"Distribuição das {N_CLASSES} classes")
+    axes[0].set_xticks(np.arange(N_CLASSES))
     axes[1].hist(target, bins=40, color="#55a868", edgecolor="white")
     axes[1].set_xlabel(r"$\lambda_{res}$ (nm)")
     axes[1].set_ylabel("Contagem")
@@ -172,6 +160,14 @@ def main() -> None:
     fig.savefig(FIGURES_DIR / "passo1_balance_mask.png", dpi=150)
     plt.close(fig)
 
+    mean_res_when_pos = []
+    for j in range(N_FBGS):
+        sel = y_mask[:, j] == 1
+        mean_res_when_pos.append(target[sel].mean() if sel.any() else np.nan)
+    mean_res_when_pos = np.array(mean_res_when_pos)
+    wl_mean = wl.mean(axis=0)
+    corr = float(np.corrcoef(wl_mean, mean_res_when_pos)[0, 1])
+
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.plot(wl_mean, mean_res_when_pos, "o-", color="#4c72b0")
     lims = [
@@ -179,11 +175,11 @@ def main() -> None:
         max(wl_mean.max(), np.nanmax(mean_res_when_pos)) + 2,
     ]
     ax.plot(lims, lims, "k--", lw=1, label="y=x")
-    for j in range(13):
+    for j in range(N_FBGS):
         ax.text(wl_mean[j], mean_res_when_pos[j], str(j), fontsize=8, ha="left", va="bottom")
     ax.set_xlabel("Posição média do FBG (nm)")
-    ax.set_ylabel(r"Média de $\lambda_{res}$ quando FBG=1")
-    ax.set_title("Coerência espacial da máscara")
+    ax.set_ylabel(r"Média de $\lambda_{res}$ quando FBG na janela")
+    ax.set_title("Coerência espacial da janela (máscara)")
     ax.legend()
     fig.tight_layout()
     fig.savefig(FIGURES_DIR / "passo1_mask_vs_lambda.png", dpi=150)
@@ -194,30 +190,34 @@ def main() -> None:
 
     meta = {
         "source": "paper/fbg-demodulated-lpfg/data/measured.dataset",
+        "formulation": "multiclass_contiguous_window",
         "n_raw": int(data["n_raw"]),
         "n_kept": int(data["n_kept"]),
         "n_removed": int(data["n_raw"] - data["n_kept"]),
-        "n_fbgs": 13,
+        "n_fbgs": N_FBGS,
         "k": int(k),
+        "n_classes": N_CLASSES,
         "wl_range_nm": list(WL_RANGE),
         "random_state": int(RANDOM_STATE),
         "X": "input_strength normalizado (min-subtract + soma=1)",
-        "y_mask": f"multi-rótulo top-{k} por |wl_bragg - target|",
-        "mask_positive_fraction_per_fbg": [float(f) for f in freq],
-        "n_samples_with_tie_at_kth": n_ties,
+        "y_class": f"classe s em 0..{N_CLASSES - 1}; janela FBGs {{s..s+{k - 1}}}",
+        "y_mask": f"máscara equivalente top-{k} / janela contígua",
+        "class_counts": [int(c) for c in counts],
         "coherence_checks_passed": True,
         "corr_wl_mean_vs_mean_res_when_pos": corr,
     }
     meta_path = RESULTS_DIR / "prepared_measured_k4_meta.json"
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2, ensure_ascii=False)
-    bal.to_csv(RESULTS_DIR / "passo1_mask_balance.csv", index=False)
+    class_bal.to_csv(RESULTS_DIR / "passo1_class_balance.csv", index=False)
+    bal_fbg.to_csv(RESULTS_DIR / "passo1_mask_balance.csv", index=False)
     print(f"Salvo: {meta_path}")
-    print(f"Salvo: {RESULTS_DIR / 'passo1_mask_balance.csv'}")
+    print(f"Salvo: {RESULTS_DIR / 'passo1_class_balance.csv'}")
 
     reloaded = load_prepared_dataset(out_npz)
     assert reloaded["X"].shape == x.shape
     assert np.array_equal(reloaded["y_mask"], y_mask)
+    assert np.array_equal(reloaded["y_class"], y_class)
     print("Reload OK")
     print("DONE")
 
