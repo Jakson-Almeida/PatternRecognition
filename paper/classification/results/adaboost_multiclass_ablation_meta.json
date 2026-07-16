@@ -1,0 +1,10 @@
+{
+  "old": "DecisionTree max_depth=1, n_estimators=50, lr=1.0",
+  "new_depth3": "DecisionTree max_depth=3 + class_weight=balanced, n=200, lr=0.5",
+  "new_tuned_best_params": {
+    "estimator__max_depth": 4,
+    "learning_rate": 0.3,
+    "n_estimators": 200
+  },
+  "new_tuned_inner_accuracy": 0.9234589875975073
+}

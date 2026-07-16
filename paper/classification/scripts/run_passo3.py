@@ -109,7 +109,7 @@ def main() -> None:
             "SVM": "RBF C=1.0, StandardScaler",
             "MLP": "hidden=(64,32), early_stopping, StandardScaler",
             "RandomForest": "n_estimators=100",
-            "AdaBoost": "n_estimators=50",
+            "AdaBoost": "DecisionTree max_depth=3, class_weight=balanced, n_estimators=200, lr=0.5",
             "MQ": "RidgeClassifier alpha=1.0 + StandardScaler",
         },
         "ranking_by_accuracy_mean": summary["classifier"].tolist(),

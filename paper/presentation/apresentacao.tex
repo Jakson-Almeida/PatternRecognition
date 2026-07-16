@@ -147,10 +147,10 @@
       \midrule
       \textbf{SVM} & $\mathbf{0{,}934\pm0{,}004}$ & 0{,}927 & 0{,}866 \\
       Random Forest & $0{,}929\pm0{,}003$ & 0{,}923 & 0{,}857 \\
+      AdaBoost & $0{,}924\pm0{,}004$ & 0{,}923 & 0{,}871 \\
       MLP & $0{,}919\pm0{,}010$ & 0{,}908 & 0{,}819 \\
       kNN & $0{,}907\pm0{,}003$ & 0{,}901 & 0{,}830 \\
       MQ & $0{,}779\pm0{,}006$ & 0{,}736 & 0{,}580 \\
-      AdaBoost & $0{,}650\pm0{,}010$ & 0{,}554 & 0{,}365 \\
       \bottomrule
     \end{tabular}
   \end{table}
@@ -167,9 +167,9 @@
       \textbf{SVM} & $\mathbf{0{,}938}$ & 0{,}931 & 0{,}874 \\
       Random Forest & $\mathbf{0{,}938}$ & 0{,}932 & 0{,}878 \\
       MLP & 0{,}933 & 0{,}923 & 0{,}846 \\
+      AdaBoost & 0{,}923 & 0{,}925 & 0{,}873 \\
       kNN & 0{,}919 & 0{,}911 & 0{,}824 \\
       MQ & 0{,}789 & 0{,}750 & 0{,}613 \\
-      AdaBoost & 0{,}543 & 0{,}409 & 0{,}209 \\
       \bottomrule
     \end{tabular}
   \end{table}
@@ -193,10 +193,38 @@
   \end{center}
 \end{frame}
 
-\begin{frame}{Matrizes de confusão $10\times 10$}
-  \begin{center}
-    \includegraphics[width=0.92\linewidth]{cm_agg_all_classifiers_pct.png}
-  \end{center}
+\begin{frame}{Matrizes de confusão $10\times 10$ (1/2)}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.32\textwidth}
+      \centering\scriptsize SVM\\
+      \includegraphics[width=\linewidth]{cm_agg_SVM_pct.png}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \centering\scriptsize Random Forest\\
+      \includegraphics[width=\linewidth]{cm_agg_RandomForest_pct.png}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \centering\scriptsize MLP\\
+      \includegraphics[width=\linewidth]{cm_agg_MLP_pct.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Matrizes de confusão $10\times 10$ (2/2)}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.32\textwidth}
+      \centering\scriptsize AdaBoost\\
+      \includegraphics[width=\linewidth]{cm_agg_AdaBoost_pct.png}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \centering\scriptsize kNN\\
+      \includegraphics[width=\linewidth]{cm_agg_kNN_pct.png}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \centering\scriptsize MQ\\
+      \includegraphics[width=\linewidth]{cm_agg_MQ_pct.png}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Ablation: $+$ posições Bragg}
@@ -212,7 +240,7 @@
     \item Problema de RP bem posto: \textbf{10 classes} de janelas contíguas.
     \item Métricas alinhadas à disciplina: acurácia + matriz de confusão.
     \item Melhores métodos: \textbf{SVM} e \textbf{Random Forest} (acurácia ${\approx}0{,}938$ no hold-out).
-    \item Classes raras e AdaBoost fraco são limitações claras.
+    \item Classes raras ($C_3$, $C_9$) são a limitação principal.
     \item Próximo passo: acoplar a janela à regressão de $\lambda_{res}$.
   \end{itemize}
 \end{frame}

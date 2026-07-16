@@ -13,6 +13,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 from .data_utils import RANDOM_STATE
 from .metrics_utils import evaluate_multiclass
@@ -63,10 +64,17 @@ def build_search_spaces(random_state: int = RANDOM_STATE) -> dict[str, dict[str,
             },
         },
         "AdaBoost": {
-            "estimator": AdaBoostClassifier(random_state=random_state),
+            "estimator": AdaBoostClassifier(
+                estimator=DecisionTreeClassifier(
+                    class_weight="balanced",
+                    random_state=random_state,
+                ),
+                random_state=random_state,
+            ),
             "param_grid": {
-                "n_estimators": [30, 50, 100],
-                "learning_rate": [0.5, 1.0],
+                "estimator__max_depth": [2, 3, 4],
+                "n_estimators": [100, 200],
+                "learning_rate": [0.3, 0.5, 1.0],
             },
         },
         "MQ": {

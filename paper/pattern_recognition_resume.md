@@ -35,9 +35,9 @@ Parte 1 (este trabalho): classificação. Parte 2 (Barino): regressão de \(\lam
 
 ## 4. Resultados (afinados)
 
-**CV (média):** SVM 0,934 · RF 0,929 · MLP 0,919 · kNN 0,907 · MQ 0,779 · AdaBoost 0,650
+**CV (média):** SVM 0,934 · RF 0,929 · MLP 0,919 · AdaBoost 0,924 · kNN 0,907 · MQ 0,779
 
-**Hold-out:** SVM/RF **0,938** · MLP 0,933 · kNN 0,919 · MQ 0,789 · AdaBoost 0,543
+**Hold-out:** SVM/RF **0,938** · MLP 0,933 · AdaBoost **0,923** · kNN 0,919 · MQ 0,789
 
 **+ wl_bragg:** ajuda MLP/RF/MQ; prejudica kNN (−0,05); SVM quase neutro.
 

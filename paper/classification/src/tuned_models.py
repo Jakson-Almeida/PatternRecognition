@@ -11,6 +11,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 from .data_utils import RANDOM_STATE
 
@@ -54,8 +55,13 @@ def build_tuned_classifiers(random_state: int = RANDOM_STATE) -> dict[str, Any]:
             random_state=random_state,
         ),
         "AdaBoost": AdaBoostClassifier(
-            n_estimators=50,
-            learning_rate=1.0,
+            estimator=DecisionTreeClassifier(
+                max_depth=4,
+                class_weight="balanced",
+                random_state=random_state,
+            ),
+            n_estimators=200,
+            learning_rate=0.3,
             random_state=random_state,
         ),
         "MQ": _pipe(RidgeClassifier(alpha=1.0, random_state=random_state)),

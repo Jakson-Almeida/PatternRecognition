@@ -93,8 +93,8 @@ Após o tuning, os modelos de consenso foram retreinados no desenvolvimento e av
 
 \subsection{Desempenho principal}
 A Tabela~\ref{tab:cv} resume a CV com modelos afinados (só potências).
-O SVM lidera em acurácia ($0{,}934\pm0{,}004$), seguido de Random Forest e MLP.
-O baseline linear (MQ) e o AdaBoost ficam claramente atrás.
+O SVM lidera em acurácia ($0{,}934\pm0{,}004$), seguido de Random Forest e AdaBoost.
+O baseline linear (MQ) fica claramente atrás.
 No hold-out (Tabela~\ref{tab:hold}), SVM e Random Forest empatam em $0{,}938$.
 
 \begin{table}[!t]
@@ -108,10 +108,10 @@ Método & Acurácia & F1 weight. & F1 macro \\
 \midrule
 SVM & $\mathbf{0{,}934\pm0{,}004}$ & $0{,}927$ & $0{,}866$ \\
 RF & $0{,}929\pm0{,}003$ & $0{,}923$ & $0{,}857$ \\
+AdaBoost & $0{,}924\pm0{,}004$ & $0{,}923$ & $0{,}871$ \\
 MLP & $0{,}919\pm0{,}010$ & $0{,}908$ & $0{,}819$ \\
 kNN & $0{,}907\pm0{,}003$ & $0{,}901$ & $0{,}830$ \\
 MQ & $0{,}779\pm0{,}006$ & $0{,}736$ & $0{,}580$ \\
-AdaBoost & $0{,}650\pm0{,}010$ & $0{,}554$ & $0{,}365$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -128,9 +128,9 @@ Método & Acurácia & F1 weight. & F1 macro \\
 SVM & $\mathbf{0{,}938}$ & $0{,}931$ & $0{,}874$ \\
 RF & $\mathbf{0{,}938}$ & $0{,}932$ & $0{,}878$ \\
 MLP & $0{,}933$ & $0{,}923$ & $0{,}846$ \\
+AdaBoost & $0{,}923$ & $0{,}925$ & $0{,}873$ \\
 kNN & $0{,}919$ & $0{,}911$ & $0{,}824$ \\
 MQ & $0{,}789$ & $0{,}750$ & $0{,}613$ \\
-AdaBoost & $0{,}543$ & $0{,}409$ & $0{,}209$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -176,7 +176,7 @@ Concatenar $\boldsymbol{\lambda}_{\mathrm{FBG}}$ às potências melhora MLP (${+
 
 A formulação multiclasse torna explícito o conjunto de decisões possíveis e alinha a avaliação à disciplina (acurácia e matriz de confusão).
 O desempenho elevado do SVM/RF reforça a viabilidade de uma arquitetura em duas etapas: seleção da janela seguida de estimação de $\lambda_{res}$~\cite{Barino2025TIM}.
-Limitações: classes raras ($C_3$, $C_9$); impacto na regressão ainda não medido; AdaBoost fraco neste problema.
+Limitações: classes raras ($C_3$, $C_9$); impacto na regressão ainda não medido.
 
 \section{Conclusão}
 
