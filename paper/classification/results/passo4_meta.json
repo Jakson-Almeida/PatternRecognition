@@ -1,18 +1,18 @@
 {
   "protocol": "nested CV",
-  "outer": "strategy A StratifiedKFold (5)",
-  "inner": "StratifiedKFold (3) on train fold, stratify=lambda_bins",
-  "scoring": "topk Jaccard samples",
+  "outer": "strategy A StratifiedKFold by y_class (5)",
+  "inner": "StratifiedKFold (3) on train fold, stratify=y_class",
+  "scoring": "accuracy",
   "holdout_used": false,
-  "k": 4,
+  "n_classes": 10,
   "random_state": 42,
-  "mq_note": "Passo 4 busca alpha de Ridge; Passo 3 usava LinearRegression (OLS)",
-  "ranking_by_jaccard_samples_mean": [
+  "mq_note": "RidgeClassifier (linear multiclass baseline)",
+  "ranking_by_accuracy_mean": [
     "SVM",
     "RandomForest",
-    "AdaBoost",
     "MLP",
     "kNN",
-    "MQ"
+    "MQ",
+    "AdaBoost"
   ]
 }

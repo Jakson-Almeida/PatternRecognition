@@ -47,14 +47,14 @@ def build_tuned_classifiers(random_state: int = RANDOM_STATE) -> dict[str, Any]:
             )
         ),
         "RandomForest": RandomForestClassifier(
-            n_estimators=200,
-            max_depth=None,
+            n_estimators=100,
+            max_depth=20,
             min_samples_leaf=1,
             n_jobs=-1,
             random_state=random_state,
         ),
         "AdaBoost": AdaBoostClassifier(
-            n_estimators=100,
+            n_estimators=50,
             learning_rate=1.0,
             random_state=random_state,
         ),
