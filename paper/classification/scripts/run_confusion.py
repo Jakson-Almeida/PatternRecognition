@@ -120,7 +120,55 @@ def main():
     fig.tight_layout()
     fig.savefig(out_dir / "cm_agg_all_classifiers.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
+
+    # Grade equivalente com percentuais (normalização por linha = classe verdadeira)
+    fig, axes = plt.subplots(2, 3, figsize=(11, 7))
+    axes = axes.ravel()
+    for ax, name in zip(axes, names):
+        cm = confusion_matrix(
+            y_te.ravel(),
+            preds[name].ravel(),
+            labels=[0, 1],
+            normalize="true",
+        )
+        ConfusionMatrixDisplay(cm * 100.0, display_labels=["0", "1"]).plot(
+            ax=ax, cmap="Blues", colorbar=False, values_format=".1f"
+        )
+        # Sufixo % em cada célula de texto do display
+        for txt in ax.texts:
+            txt.set_text(f"{txt.get_text()}%")
+        ax.set_title(name)
+        ax.set_xlabel("Predito")
+        ax.set_ylabel("Verdadeiro")
+    fig.suptitle(
+        "Matrizes agregadas (%) — hold-out (top-4)\n"
+        "percentual por linha (classe verdadeira)",
+        y=1.05,
+    )
+    fig.tight_layout()
+    fig.savefig(out_dir / "cm_agg_all_classifiers_pct.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    # Individuais agregados em %
+    for name, y_pred in preds.items():
+        cm = confusion_matrix(
+            y_te.ravel(), y_pred.ravel(), labels=[0, 1], normalize="true"
+        )
+        fig, ax = plt.subplots(figsize=(4.2, 3.6))
+        ConfusionMatrixDisplay(
+            cm * 100.0, display_labels=["0 (fora)", "1 (máscara)"]
+        ).plot(ax=ax, cmap="Blues", colorbar=False, values_format=".1f")
+        for txt in ax.texts:
+            txt.set_text(f"{txt.get_text()}%")
+        ax.set_title(f"{name} — confusão agregada (%)")
+        ax.set_xlabel("Predito")
+        ax.set_ylabel("Verdadeiro")
+        fig.tight_layout()
+        fig.savefig(out_dir / f"cm_agg_{name}_pct.png", dpi=150)
+        plt.close(fig)
+
     print("DONE", out_dir)
+    print("percentuais:", out_dir / "cm_agg_all_classifiers_pct.png")
 
 
 if __name__ == "__main__":
