@@ -38,7 +38,7 @@ def main() -> None:
     target = np.asarray(data["target"], dtype=float).ravel()
     assert X.shape[1] == N_FBGS
 
-    X_show, lam_show, _ = select_samples(X, target, N_SHOW)
+    X_show, _, _ = select_samples(X, target, N_SHOW)
 
     fig, ax = plt.subplots(figsize=(8.5, 10.5))
     im = ax.imshow(
@@ -52,20 +52,11 @@ def main() -> None:
     cbar.set_label("Potência normalizada", fontsize=11)
 
     ax.set_xlabel("Índice da FBG", fontsize=11)
-    ax.set_ylabel("Amostra (ordenada por $\\lambda_{res}$ crescente)", fontsize=11)
-    ax.set_title(
-        f"Potências FBG — {N_SHOW} de {X.shape[0]} amostras\n"
-        f"$\\lambda_{{res}}$: {lam_show[0]:.1f} → {lam_show[-1]:.1f} nm",
-        fontsize=12,
-    )
+    ax.set_title(f"Potências FBG — {N_SHOW} de {X.shape[0]} amostras", fontsize=12)
     ax.set_xticks(np.arange(N_FBGS))
     ax.set_xticklabels([str(i) for i in range(N_FBGS)])
-
-    # Marcas de lambda_res no eixo y (algumas linhas)
-    y_ticks = np.linspace(0, N_SHOW - 1, 8, dtype=int)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels([f"{lam_show[i]:.0f}" for i in y_ticks])
-    ax.set_ylabel("$\\lambda_{res}$ da amostra (nm)", fontsize=11)
+    ax.set_yticks([])
+    ax.set_ylabel("")
 
     fig.tight_layout()
     out = FIGURES_DIR / "fig_fbg_power_heatmap_73x13.png"
@@ -73,7 +64,7 @@ def main() -> None:
     fig.savefig(out, dpi=200, bbox_inches="tight")
     plt.close(fig)
     print(f"salvo: {out}")
-    print(f"shape: {X_show.shape} | lambda [{lam_show.min():.2f}, {lam_show.max():.2f}] nm")
+    print(f"shape: {X_show.shape}")
     print(f"X min/max na figura: {X_show.min():.4f} / {X_show.max():.4f}")
 
 
