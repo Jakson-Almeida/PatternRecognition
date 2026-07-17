@@ -43,14 +43,20 @@ Classificação multiclasse, FBG, LPFG, reconhecimento de padrões, sensores óp
 
 \section{Introdução}
 
-Redes de período longo em fibra (LPFG) acoplam o modo fundamental a modos de revestimento e atuam como filtros de rejeição de banda, viabilizando sensores de índice de refração, temperatura e outras grandezas~\cite{James1996LPFG}.
-Em contraste, as redes de Bragg (FBG) apresentam pico de reflexão estreito e contam com cadeias de interrogação relativamente maduras e comercialmente disponíveis~\cite{Kersey1997FBG}.
-Essa assimetria faz com que a leitura direta do vale ressonante de uma LPFG --- tipicamente via analisador óptico de espectro --- permaneça um obstáculo de custo para aplicações em campo e para multiplexação em redes densas de sensores.
+Redes de Bragg em fibra (FBG) e redes de período longo (LPFG) são tecnologias consolidadas em sensoriamento óptico, porém com paradigmas espectrais distintos~\cite{Kersey1997FBG,James1996LPFG}.
+Uma FBG reflete uma componente espectral estreita no comprimento de onda de Bragg --- tipicamente com largura da ordem de $0{,}05$ a $0{,}3$~nm em aplicações de sensores --- e desloca esse pico com deformação ou temperatura~\cite{Kersey1997FBG}.
+Essa assinatura estreita favorece multiplexação em comprimento de onda (WDM) ao longo de uma mesma fibra e sustenta cadeias de interrogação comerciais maduras~\cite{Kersey1997FBG}.
+LPFGs, por outro lado, acoplam o modo guiado fundamental a modos de revestimento que se propagam no mesmo sentido e atuam como filtros de rejeição de banda de baixas perdas de inserção~\cite{James1996LPFG}.
+O vale ressonante de uma LPFG pode estender-se por décimos de nanômetro, exigindo medidas espectrais de banda larga para localizar $\lambda_{res}$~\cite{Barino2025TIM}.
+Na prática, isso frequentemente implica analisadores ópticos de espectro volumosos e/ou caros --- muitas vezes dedicados a um único sensor --- o que limita adoção em campo e a densidade de multiplexação frente às FBGs~\cite{Barino2025TIM}.
 
-Uma linha recente combina um array de FBGs, operando como banco de filtros, com modelos de aprendizado de máquina para recuperar o comprimento de onda ressonante $\lambda_{res}$ da LPFG a partir das potências refletidas~\cite{Barino2020Sensors,Barino2024LAWOFS,Barino2025TIM}.
-Em~\cite{Barino2025TIM}, um modelo com autoatenção treinado em dados sintéticos e validado em medidas reais reporta RMSE de $0{,}75$~nm e MAPE de $0{,}0335\%$ em $73$ espectros LPFG, além de erro relativo inferior a $1\%$ em uma aplicação de índice de refração.
-O mecanismo de atenção concentra-se em canais espectrais (FBGs) mais informativos, sugerindo que apenas um subconjunto do array é decisório para a demodulação.
-Declarar esse subconjunto de forma discreta --- antes da regressão --- é o objeto deste artigo.
+Apesar do custo de interrogação, LPFGs permanecem atrativas: a fabricação pode ser mais simples que a de FBGs (técnicas point-by-point por arco elétrico ou laser, varredura laser, e até LPFGs dinâmicas por deformação mecânica) e a sensibilidade intrínseca a índice de refração abre aplicações em biosensores, monitoramento estrutural e indústria~\cite{Barino2025TIM}.
+Desenvolver métodos de interrogação baratos e integráveis a redes já existentes é, portanto, um passo para levar LPFGs além do laboratório~\cite{Barino2025TIM}.
+
+Uma estratégia para reutilizar a infraestrutura de FBGs consiste em cascatear a LPFG a um array de FBGs: o espectro de transmissão da LPFG modula as potências refletidas do array, e um modelo de aprendizado de máquina recupera $\lambda_{res}$ a partir dessas potências~\cite{Barino2020Sensors,Barino2024LAWOFS,Barino2025TIM}.
+Alternativas na literatura buscam reduzir custo via filtragem esparsa/densa do espectro (p.ex.\ AWGs); a linha de~\cite{Barino2025TIM} diferencia-se ao empregar um array FBG arbitrário e um modelo de autoatenção treinado em sintéticos, sem exigir conhecimento prévio detalhado da transmitância da LPFG.
+Em~\cite{Barino2025TIM}, o sistema reporta RMSE de $0{,}75$~nm e MAPE de $0{,}0335\%$ em $73$ espectros LPFG medidos, além de erro relativo inferior a $1\%$ em uma aplicação de índice de refração.
+O mecanismo de atenção filtra dinamicamente canais (FBGs) mais informativos, evidenciando que apenas um subconjunto do array é decisório para a demodulação.
 
 Motivados por essa evidência, separamos o problema em duas etapas: (i)~selecionar a \emph{janela} de FBGs relevantes; (ii)~estimar $\lambda_{res}$ (já tratada em~\cite{Barino2025TIM}).
 Este artigo desenvolve a etapa~(i) como \textbf{classificação multiclasse}.
@@ -64,22 +70,37 @@ Nos dados filtrados ($1515<\lambda_{res}<1585$~nm), a máscara das quatro FBGs d
 \section{Trabalhos relacionados}
 
 \subsection{LPFG, FBG e interrogação}
-Vengsarkar \textit{et al.} estabeleceram LPFGs como filtros espectrais por acoplamento a modos de revestimento~\cite{James1996LPFG}.
-Kersey \textit{et al.} revisaram sensores a FBG e famílias de interrogadores (filtro sintonizável, interferometria, etc.), consolidando as FBGs como elemento padrão em redes de sensores~\cite{Kersey1997FBG}.
-Arquiteturas híbridas exploram essa maturidade: um interrogador de FBGs ``enxerga'' a LPFG indiretamente, via modulação das potências refletidas pelo espectro de transmissão da LPFG.
+Vengsarkar \textit{et al.} introduziram LPFGs fotoinduzidas como filtros de rejeição de banda \emph{in-fiber}, acoplando o modo fundamental a modos de revestimento progressivos, com perdas de inserção baixas e reflexões de retorno extremamente reduzidas~\cite{James1996LPFG}.
+Kersey \textit{et al.} revisaram sensores a grades em fibra, cobrindo sensores pontuais a FBG, grades chirpadas, lasers em fibra com FBG, LPFGs e configurações interferométricas~\cite{Kersey1997FBG}.
+No regime FBG, a condição de Bragg liga o passo da grade ao índice efetivo do núcleo; uma fonte de banda larga injeta luz na fibra e uma componente estreita é refletida (e ausente na transmissão), deslocando-se com o mensurando~\cite{Kersey1997FBG}.
+Essa propriedade de auto-referência espectral e a facilidade de multiplexação serial tornaram FBGs centrais em estruturas inteligentes e em redes quasi-distribuídas de deformação/temperatura~\cite{Kersey1997FBG}.
+
+A assimetria espectral FBG/LPFG explica o descompasso de interrogação: FBGs operam bem com eletrônica optoeletrônica compartilhada via WDM, enquanto o vale largo da LPFG dificulta empilhar muitos sensores na mesma banda~\cite{Barino2025TIM}.
+Arquiteturas híbridas exploram a maturidade dos interrogadores de FBG: o equipamento ``enxerga'' a LPFG indiretamente, via modulação das potências refletidas do array.
+Isso preserva vantagens clássicas do sensoriamento a fibra --- operação eletricamente passiva no ponto de medida, imunidade a EMI e possibilidade de sensoriamento distribuído/quasi-distribuído --- ao mesmo tempo em que desloca a complexidade para o processamento dos canais FBG~\cite{Kersey1997FBG}.
 
 \subsection{Demodulação LPFG via array FBG e ML}
 Barino e dos Santos propuseram um interrogador LPG baseado em array FBG e rede neural artificial, mapeando potências em $\lambda_{res}$~\cite{Barino2020Sensors}.
-Em~\cite{Barino2024LAWOFS}, a abordagem foi estendida a um sensor LPFG cascateado a um array FBG com modelos de aprendizado de máquina.
-O trabalho subsequente~\cite{Barino2025TIM} introduz autoatenção, treino sintético e validação experimental, enfatizando filtragem dinâmica dos canais FBG mais relevantes.
+Em~\cite{Barino2024LAWOFS}, a linha foi estendida a um sensor LPFG cascateado a um array FBG com modelos de aprendizado de máquina.
+O trabalho subsequente~\cite{Barino2025TIM} detalha um arranjo experimental com $13$ FBGs (centros aproximados entre $1510$ e $1590$~nm), interrogador comercial FS22DI (HBM) e circuladores ópticos para evitar dupla passagem atenuante pela LPFG antes/depois da reflexão no array.
+O pré-processamento extrai comprimento de Bragg e intensidade refletida por pico (aproximação gaussiana), remove \emph{baseline} sem LPFG e normaliza as potências pela soma --- o mesmo espírito de normalização adotado neste trabalho.
+O modelo com autoatenção é treinado em espectros LPFG sintéticos e validado em medidas reais~\cite{Barino2025TIM}.
+Conceitualmente, o modelo busca independência das posições absolutas das FBGs: a partir da força de entrada normalizada, gera um vetor de ``força filtrada'' que, em produto interno com os comprimentos de Bragg, estima $\lambda_{res}$~\cite{Barino2025TIM}.
+A autoatenção produz um mapa dinâmico (por amostra) que modula features ocultas, atenuando canais ruidosos ou FBGs distantes do vale~\cite{Barino2025TIM}.
+Treinar em sintéticos reduz a necessidade de coletar vastos conjuntos experimentais rotulados; a validação em $73$ espectros medidos e em um sensor de índice de refração (erro relativo $<1\%$) demonstra transferência para o domínio real~\cite{Barino2025TIM}.
 Em conjunto, essa linha resolve a \emph{regressão} de $\lambda_{res}$; permanece aberta a pergunta de reconhecimento de padrões: como declarar, de forma discreta e avaliável, \emph{quais} FBGs devem entrar na estimação.
 
-A autoatenção em~\cite{Barino2025TIM} funciona, em essência, como um filtro adaptativo sobre o espectro refletido: canais pouco informativos recebem menor peso.
-Isso motiva declarar a seleção de canais de forma \emph{explícita} e avaliável --- objetivo deste trabalho --- em vez de deixá-la apenas implícita nos pesos de uma rede profunda.
+Declarar a seleção de canais explicitamente --- em vez de deixá-la apenas implícita nos pesos de uma rede profunda --- permite métricas clássicas (acurácia, F1, matriz de confusão) e facilita diagnóstico em uma cascata classificação$\to$regressão.
+Além disso, um estágio de classificação raso pode ser retreinado quando o espaçamento do array FBG muda, enquanto o regressor de~\cite{Barino2025TIM} permanece responsável pela precisão submetrica de $\lambda_{res}$.
+A formulação multiclasse deste artigo pode ser lida, portanto, como uma versão \emph{explícita} e avaliável da filtragem de canais que a autoatenção realiza de modo contínuo.
 
 \subsection{Classificadores empregados}
-Comparamos $k$-vizinhos mais próximos (kNN); SVM com kernel RBF~\cite{Cortes1995SVM}; MLP; florestas aleatórias~\cite{Breiman2001RF}; AdaBoost com árvores de decisão; e um baseline linear (RidgeClassifier, denotado MQ).
+Adotamos métodos clássicos e bem documentados em reconhecimento de padrões~\cite{Hastie2009ESL}.
+Máquinas de vetores de suporte (SVM) maximizam a margem de separação e, com kernels, tratam fronteiras não lineares; a formulação original de Cortes e Vapnik enfatiza generalização via controle de capacidade~\cite{Cortes1995SVM} --- usamos kernel RBF.
+Florestas aleatórias agregam árvores treinadas com aleatoriedade em amostras/atributos; o erro de generalização converge com o número de árvores e depende da força individual e da correlação entre elas, com robustez favorável a ruído em relação a certos esquemas de boosting~\cite{Breiman2001RF}.
+Também avaliamos $k$-vizinhos mais próximos (kNN), perceptron multicamadas (MLP), AdaBoost com árvores de decisão e um baseline linear (RidgeClassifier, denotado MQ).
 A escolha privilegia reprodutibilidade e contraste entre indutores lineares e não lineares, em vez de competir diretamente com a arquitetura profunda de~\cite{Barino2025TIM} na regressão.
+Nested CV, recomendada para evitar viés otimista ao ajustar hiperparâmetros~\cite{Hastie2009ESL}, é o protocolo de seleção de modelos deste artigo.
 
 \section{Formulação do problema}
 
@@ -136,7 +157,7 @@ $C_4$ & 1501 & 20{,}56 & $C_9$ & 100 & 1{,}37 \\
 
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.55\textwidth]{fig_fbg_power_heatmap_73x13.png}
+\includegraphics[width=0.72\textwidth]{fig_fbg_power_heatmap_73x13.png}
 \caption{Potências FBG normalizadas ($73$ de $7300$ amostras). A diagonal clara indica o deslocamento do padrão pelo array; $\lambda_{res}$ não é exibido.}
 \label{fig:heatmap}
 \end{figure*}
