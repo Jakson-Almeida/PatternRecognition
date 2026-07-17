@@ -2,4 +2,5 @@ __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
 *.synctex.gz
-/paper/bibliography
+# PDFs baixados para revisão (mantém doi.md e outros textos)
+paper/bibliography/*.pdf
