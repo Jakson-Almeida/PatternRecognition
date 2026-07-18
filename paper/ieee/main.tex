@@ -32,12 +32,12 @@ Juiz de Fora, MG, Brasil}
 \maketitle
 
 \begin{abstract}
-Sensores LPFG oferecem alta sensibilidade, mas sua interrogação espectral convencional é cara.
-Uma alternativa \emph{modula} o espectro da LPFG com um array de FBGs e estima $\lambda_{res}$ por aprendizado de máquina.
-Observamos que as quatro FBGs mais próximas de $\lambda_{res}$ formam sempre uma janela contígua; isso permite reduzir a seleção de canais a dez classes $C_s=\{s,\ldots,s+3\}$.
-Avaliamos seis classificadores clássicos em $7300$ amostras reais, com nested CV e hold-out estratificado.
-SVM e Random Forest atingem acurácia $0{,}938$ no hold-out; a análise mostra erros predominantemente entre janelas adjacentes e impacto do desbalanceamento de classes.
-O resultado apoia uma arquitetura em duas etapas: classificar a janela e, em seguida, estimar $\lambda_{res}$.
+Sensores baseados em redes de período longo (LPFG) oferecem alta sensibilidade, mas sua interrogação espectral convencional exige equipamentos caros.
+Uma alternativa de baixo custo cascateia a LPFG a um array de redes de Bragg (FBG): o espectro da LPFG modula as potências refletidas pelo array, e um modelo de aprendizado de máquina estima o comprimento de onda ressonante $\lambda_{res}$.
+Observamos que as quatro FBGs mais próximas de $\lambda_{res}$ formam sempre uma janela contígua de índices, o que reduz a seleção de canais a dez classes $C_s=\{s,\ldots,s+3\}$.
+Avaliamos seis classificadores clássicos em $7300$ amostras reais, com validação cruzada aninhada e hold-out estratificado.
+SVM e Random Forest atingem acurácia de $0{,}938$ no hold-out; a análise mostra erros concentrados entre janelas adjacentes e impacto do desbalanceamento de classes.
+Os resultados apoiam uma arquitetura em duas etapas: classificar a janela e, em seguida, estimar $\lambda_{res}$.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -50,14 +50,14 @@ Redes de Bragg em fibra (FBG) e redes de período longo (LPFG) são tecnologias 
 Uma FBG reflete uma componente espectral estreita no comprimento de onda de Bragg --- tipicamente com largura da ordem de $0{,}05$ a $0{,}3$~nm em aplicações de sensores --- e desloca esse pico com deformação ou temperatura~\cite{Kersey1997FBG}.
 Essa assinatura estreita favorece multiplexação em comprimento de onda (WDM) ao longo de uma mesma fibra e sustenta cadeias de interrogação comerciais maduras~\cite{Kersey1997FBG}.
 LPFGs, por outro lado, acoplam o modo guiado fundamental a modos de revestimento que se propagam no mesmo sentido e atuam como filtros de rejeição de banda de baixas perdas de inserção~\cite{James1996LPFG}.
-O vale ressonante de uma LPFG pode estender-se por décimos de nanômetro, exigindo medidas espectrais de banda larga para localizar $\lambda_{res}$~\cite{Barino2025TIM}.
+O vale ressonante de uma LPFG, em contraste, pode estender-se por dezenas de nanômetros, exigindo medidas espectrais de banda larga para localizar o comprimento de onda ressonante $\lambda_{res}$~\cite{Barino2025TIM}.
 Na prática, isso frequentemente implica analisadores ópticos de espectro volumosos e/ou caros --- muitas vezes dedicados a um único sensor --- o que limita adoção em campo e a densidade de multiplexação frente às FBGs~\cite{Barino2025TIM}.
 
-Apesar do custo de interrogação, LPFGs permanecem atrativas: a fabricação pode ser mais simples que a de FBGs (técnicas point-by-point por arco elétrico ou laser, varredura laser, e até LPFGs dinâmicas por deformação mecânica) e a sensibilidade intrínseca a índice de refração abre aplicações em biosensores, monitoramento estrutural e indústria~\cite{Barino2025TIM}.
+Apesar do custo de interrogação, LPFGs permanecem atrativas: a fabricação pode ser mais simples que a de FBGs (técnicas point-by-point por arco elétrico ou laser, varredura laser, e até LPFGs dinâmicas por deformação mecânica) e a sensibilidade intrínseca a índice de refração abre aplicações em biossensores, monitoramento estrutural e indústria~\cite{Barino2025TIM}.
 Desenvolver métodos de interrogação baratos e integráveis a redes já existentes é, portanto, um passo para levar LPFGs além do laboratório~\cite{Barino2025TIM}.
 
 Uma estratégia para reutilizar a infraestrutura de FBGs consiste em cascatear a LPFG a um array de FBGs: o espectro de transmissão da LPFG modula as potências refletidas do array, e um modelo de aprendizado de máquina recupera $\lambda_{res}$ a partir dessas potências~\cite{Barino2020Sensors,Barino2024LAWOFS,Barino2025TIM}.
-Alternativas na literatura buscam reduzir custo via filtragem esparsa/densa do espectro (p.ex.\ AWGs); a linha de~\cite{Barino2025TIM} diferencia-se ao empregar um array FBG arbitrário e um modelo de autoatenção treinado em sintéticos, sem exigir conhecimento prévio detalhado da transmitância da LPFG.
+Alternativas na literatura buscam reduzir custo via filtragem esparsa/densa do espectro, p.ex.\ com grades de guias de onda em arranjo (AWG); a linha de~\cite{Barino2025TIM} diferencia-se ao empregar um array FBG arbitrário e um modelo de autoatenção treinado em dados sintéticos, sem exigir conhecimento prévio detalhado da transmitância da LPFG.
 Em~\cite{Barino2025TIM}, o sistema reporta RMSE de $0{,}75$~nm e MAPE de $0{,}0335\%$ em $73$ espectros LPFG medidos, além de erro relativo inferior a $1\%$ em uma aplicação de índice de refração.
 O mecanismo de atenção filtra dinamicamente canais (FBGs) mais informativos, evidenciando que apenas um subconjunto do array é decisório para a demodulação.
 
@@ -67,26 +67,26 @@ Nos dados filtrados ($1515<\lambda_{res}<1585$~nm), a máscara das quatro FBGs d
 
 \textbf{Contribuições:}
 (i)~formulação da seleção de FBGs como classificação com $10$ janelas contíguas, validada em dados reais;
-(ii)~comparação de seis classificadores clássicos com nested CV e hold-out isolado;
+(ii)~comparação de seis classificadores clássicos com validação cruzada aninhada (nested CV) e hold-out isolado;
 (iii)~análises complementares de erro versus $\lambda_{res}$, matriz de confusão e efeito de incluir as posições Bragg.
 
 \section{Trabalhos relacionados}
 
 \subsection{LPFG, FBG e interrogação}
-Vengsarkar \textit{et al.} introduziram LPFGs fotoinduzidas como filtros de rejeição de banda \emph{in-fiber}, acoplando o modo fundamental a modos de revestimento progressivos, com perdas de inserção baixas e reflexões de retorno extremamente reduzidas~\cite{James1996LPFG}.
+Vengsarkar \textit{et al.} introduziram LPFGs fotoinduzidas como filtros de rejeição de banda \emph{in-fiber}, acoplando o modo fundamental a modos de revestimento copropagantes, com perdas de inserção baixas e reflexões de retorno extremamente reduzidas~\cite{James1996LPFG}.
 Kersey \textit{et al.} revisaram sensores a grades em fibra, cobrindo sensores pontuais a FBG, grades chirpadas, lasers em fibra com FBG, LPFGs e configurações interferométricas~\cite{Kersey1997FBG}.
 No regime FBG, a condição de Bragg liga o passo da grade ao índice efetivo do núcleo; uma fonte de banda larga injeta luz na fibra e uma componente estreita é refletida (e ausente na transmissão), deslocando-se com o mensurando~\cite{Kersey1997FBG}.
 Essa propriedade de auto-referência espectral e a facilidade de multiplexação serial tornaram FBGs centrais em estruturas inteligentes e em redes quasi-distribuídas de deformação/temperatura~\cite{Kersey1997FBG}.
 
-A assimetria espectral FBG/LPFG explica o descompasso de interrogação: FBGs operam bem com eletrônica optoeletrônica compartilhada via WDM, enquanto o vale largo da LPFG dificulta empilhar muitos sensores na mesma banda~\cite{Barino2025TIM}.
+A assimetria espectral FBG/LPFG explica o descompasso de interrogação: FBGs operam bem com instrumentação optoeletrônica compartilhada via WDM, enquanto o vale largo da LPFG dificulta empilhar muitos sensores na mesma banda~\cite{Barino2025TIM}.
 Arquiteturas híbridas exploram a maturidade dos interrogadores de FBG: o equipamento ``enxerga'' a LPFG indiretamente, via modulação das potências refletidas do array.
 Isso preserva vantagens clássicas do sensoriamento a fibra --- operação eletricamente passiva no ponto de medida, imunidade a EMI e possibilidade de sensoriamento distribuído/quasi-distribuído --- ao mesmo tempo em que desloca a complexidade para o processamento dos canais FBG~\cite{Kersey1997FBG}.
 
 \subsection{Demodulação LPFG via array FBG e ML}
-Barino e dos Santos propuseram um interrogador LPG baseado em array FBG e rede neural artificial, mapeando potências em $\lambda_{res}$~\cite{Barino2020Sensors}.
+Barino e dos Santos propuseram um interrogador de LPFG baseado em array FBG e rede neural artificial, mapeando potências em $\lambda_{res}$~\cite{Barino2020Sensors}.
 Em~\cite{Barino2024LAWOFS}, a linha foi estendida a um sensor LPFG cascateado a um array FBG com modelos de aprendizado de máquina.
 O trabalho subsequente~\cite{Barino2025TIM} detalha um arranjo experimental com $13$ FBGs (centros aproximados entre $1510$ e $1590$~nm), interrogador comercial FS22DI (HBM) e circuladores ópticos para evitar dupla passagem atenuante pela LPFG antes/depois da reflexão no array.
-O pré-processamento extrai comprimento de Bragg e intensidade refletida por pico (aproximação gaussiana), remove \emph{baseline} sem LPFG e normaliza as potências pela soma --- o mesmo espírito de normalização adotado neste trabalho.
+O pré-processamento extrai comprimento de Bragg e intensidade refletida por pico (aproximação gaussiana), remove o \emph{baseline} medido sem a LPFG e normaliza as potências pela soma --- o mesmo espírito de normalização adotado neste trabalho.
 O modelo com autoatenção é treinado em espectros LPFG sintéticos e validado em medidas reais~\cite{Barino2025TIM}.
 Conceitualmente, o modelo busca independência das posições absolutas das FBGs: a partir da força de entrada normalizada, gera um vetor de ``força filtrada'' que, em produto interno com os comprimentos de Bragg, estima $\lambda_{res}$~\cite{Barino2025TIM}.
 A autoatenção produz um mapa dinâmico (por amostra) que modula features ocultas, atenuando canais ruidosos ou FBGs distantes do vale~\cite{Barino2025TIM}.
@@ -94,16 +94,16 @@ Treinar em sintéticos reduz a necessidade de coletar vastos conjuntos experimen
 Em conjunto, essa linha resolve a \emph{regressão} de $\lambda_{res}$; permanece aberta a pergunta de reconhecimento de padrões: como declarar, de forma discreta e avaliável, \emph{quais} FBGs devem entrar na estimação.
 
 Declarar a seleção de canais explicitamente --- em vez de deixá-la apenas implícita nos pesos de uma rede profunda --- permite métricas clássicas (acurácia, F1, matriz de confusão) e facilita diagnóstico em uma cascata classificação$\to$regressão.
-Além disso, um estágio de classificação raso pode ser retreinado quando o espaçamento do array FBG muda, enquanto o regressor de~\cite{Barino2025TIM} permanece responsável pela precisão submetrica de $\lambda_{res}$.
+Além disso, um estágio de classificação raso pode ser retreinado quando o espaçamento do array FBG muda, enquanto o regressor de~\cite{Barino2025TIM} permanece responsável pela precisão subnanométrica de $\lambda_{res}$.
 A formulação multiclasse deste artigo pode ser lida, portanto, como uma versão \emph{explícita} e avaliável da filtragem de canais que a autoatenção realiza de modo contínuo.
 
 \subsection{Classificadores empregados}
 Adotamos métodos clássicos e bem documentados em reconhecimento de padrões~\cite{Hastie2009ESL}.
 Máquinas de vetores de suporte (SVM) maximizam a margem de separação e, com kernels, tratam fronteiras não lineares; a formulação original de Cortes e Vapnik enfatiza generalização via controle de capacidade~\cite{Cortes1995SVM} --- usamos kernel RBF.
 Florestas aleatórias agregam árvores treinadas com aleatoriedade em amostras/atributos; o erro de generalização converge com o número de árvores e depende da força individual e da correlação entre elas, com robustez favorável a ruído em relação a certos esquemas de boosting~\cite{Breiman2001RF}.
-Também avaliamos $k$-vizinhos mais próximos (kNN), perceptron multicamadas (MLP), AdaBoost com árvores de decisão e um baseline linear (RidgeClassifier, denotado MQ).
+Também avaliamos $k$-vizinhos mais próximos (kNN), perceptron multicamadas (MLP), AdaBoost com árvores de decisão e um baseline linear por mínimos quadrados regularizados (\texttt{RidgeClassifier}, denotado MQ).
 A escolha privilegia reprodutibilidade e contraste entre indutores lineares e não lineares, em vez de competir diretamente com a arquitetura profunda de~\cite{Barino2025TIM} na regressão.
-Nested CV, recomendada para evitar viés otimista ao ajustar hiperparâmetros~\cite{Hastie2009ESL}, é o protocolo de seleção de modelos deste artigo.
+A validação cruzada aninhada (nested CV), recomendada para evitar viés otimista ao ajustar hiperparâmetros~\cite{Hastie2009ESL}, é o protocolo de seleção de modelos deste artigo.
 
 \section{Formulação do problema}
 
@@ -132,9 +132,9 @@ Janelas vizinhas $C_s$ e $C_{s+1}$ compartilham três índices e diferem por um,
 \subsection{Dados e pré-processamento}
 Usamos o conjunto medido associado a~\cite{Barino2025TIM}.
 No arranjo experimental de referência, LPFG e array de $13$ FBGs (centros aproximados entre $1510$ e $1590$~nm) são cascateados e lidos por um interrogador comercial de FBGs; a LPFG modula o perfil de refletividade visto pelo interrogador~\cite{Barino2025TIM}.
-Há $8200$ amostras no arquivo bruto; o filtro $1515<\lambda_{res}<1585$~nm --- interior ao span do array --- produz $7300$ exemplos utilizáveis.
+Há $8200$ amostras no arquivo bruto; o filtro $1515<\lambda_{res}<1585$~nm --- interno à faixa coberta pelo array --- produz $7300$ exemplos utilizáveis.
 As potências são normalizadas por amostra (subtração do mínimo e divisão pela soma), como em~\cite{Barino2025TIM}, garantindo invariância a offset e escala global.
-A Fig.~\ref{fig:heatmap} exibe $73$ amostras espalhadas ao longo do intervalo de $\lambda_{res}$: a faixa de alta potência desloca-se pelas colunas do array, embora $\lambda_{res}$ não apareça na figura.
+A Fig.~\ref{fig:heatmap} exibe $73$ amostras espalhadas ao longo do intervalo útil e ordenadas por $\lambda_{res}$: a faixa de alta potência desloca-se pelas colunas do array conforme o vale da LPFG varre as posições das FBGs, o que evidencia a estrutura explorada pela classificação em janelas.
 
 A Tabela~\ref{tab:balance} quantifica o desbalanceamento.
 $C_2$ concentra quase $29\%$ dos exemplos, enquanto $C_3$ e $C_9$ ficam abaixo de $1{,}5\%$.
@@ -161,14 +161,14 @@ $C_4$ & 1501 & 20{,}56 & $C_9$ & 100 & 1{,}37 \\
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.72\textwidth]{fig_fbg_power_heatmap_73x13.png}
-\caption{Potências FBG normalizadas ($73$ de $7300$ amostras). A diagonal clara indica o deslocamento do padrão pelo array; $\lambda_{res}$ não é exibido.}
+\caption{Potências FBG normalizadas ($73$ de $7300$ amostras, ordenadas por $\lambda_{res}$). A faixa clara em diagonal indica o deslocamento do padrão de potências pelo array à medida que $\lambda_{res}$ cresce.}
 \label{fig:heatmap}
 \end{figure*}
 
 \subsection{Classificadores e hiperparâmetros}
 Comparamos kNN, SVM~RBF, MLP, Random Forest, AdaBoost e MQ.
 kNN, SVM, MLP e MQ usam \texttt{StandardScaler} ajustado apenas no treino de cada partição.
-As grades de busca incluem, entre outros: $k\in\{3,5,7,11\}$ e pesos uniforme/distância (kNN); $C\in\{0{,}1,1,10\}$ e $\gamma\in\{\mathrm{scale},0{,}1\}$ (SVM); arquiteturas e regularização $\alpha$ (MLP); profundidade e número de árvores (RF); e, no AdaBoost, profundidade da árvore base $\in\{2,3,4\}$, $n_{\mathrm{estimators}}\in\{100,200\}$ e taxa de aprendizado $\in\{0{,}3,0{,}5,1{,}0\}$, sempre com \texttt{class\_weight=balanced}.
+As grades de busca incluem, entre outros: $k\in\{3,5,7,11\}$ e pesos uniforme/distância (kNN); $C\in\{0{,}1,1,10\}$ e $\gamma\in\{\mathrm{scale},0{,}1\}$ (SVM); arquiteturas e regularização $\alpha$ (MLP); profundidade e número de árvores (RF); e, no AdaBoost, profundidade da árvore base $\in\{2;3;4\}$, número de estimadores $\in\{100;200\}$ e taxa de aprendizado $\in\{0{,}3;\,0{,}5;\,1{,}0\}$, sempre com pesos de classe balanceados na árvore base.
 O consenso do AdaBoost no desenvolvimento foi profundidade~$4$, $200$ estimadores e taxa~$0{,}3$.
 
 \subsection{Protocolo de avaliação}
@@ -185,8 +185,8 @@ Implementações seguem a biblioteca \texttt{scikit-learn}, com semente fixa par
 \subsection{Desempenho agregado}
 A Tabela~\ref{tab:results} coloca CV e hold-out na mesma visão.
 SVM lidera a CV ($0{,}934\pm0{,}004$) e empata com Random Forest no hold-out ($0{,}938$).
-AdaBoost, após o ajuste descrito, entra no pelotão intermediário-alto ($0{,}923$ no hold-out), bem acima do baseline linear MQ ($0{,}789$), indicando que a fronteira potências$\to$janela é essencialmente não linear.
-O gap entre F1 weighted e F1 macro (omitido da tabela por espaço, porém observado em todos os métodos) acompanha o desbalanceamento da Tabela~\ref{tab:balance}.
+AdaBoost, após o ajuste descrito, aproxima-se dos líderes ($0{,}923$ no hold-out) e fica bem acima do baseline linear MQ ($0{,}789$), indicando que a fronteira potências$\to$janela é essencialmente não linear.
+A diferença entre F1 weighted e F1 macro --- p.ex., $0{,}931$ contra $0{,}874$ para o SVM no hold-out --- é observada em todos os métodos e acompanha o desbalanceamento da Tabela~\ref{tab:balance}.
 
 \begin{table}[!t]
 \caption{Desempenho multiclasse: CV (média $\pm$ desvio) e hold-out (HO).}
@@ -209,8 +209,8 @@ MQ & $0{,}779\pm0{,}007$ & $0{,}736$ & $0{,}789$ & $0{,}750$ \\
 
 \subsection{Erros versus $\lambda_{res}$}
 A Fig.~\ref{fig:lambda} mostra a acurácia do SVM por faixas de $\lambda_{res}$ (predições da CV empilhadas).
-Faixas centrais do intervalo útil são tipicamente mais fáceis; a degradação concentra-se em ${\approx}1548$--$1580$~nm, região em que classes de janela periféricas e amostras mais escassas se combinam.
-Essa visão é complementar à Tabela~\ref{tab:results}: o mesmo modelo ``médio'' esconde heterogeneidade espectral.
+A degradação concentra-se em ${\approx}1548$--$1580$~nm, região em que janelas periféricas e amostras mais escassas se combinam; a borda inferior do intervalo, em contraste, mantém acurácia próxima de $0{,}96$, de modo que a hipótese de que ``bordas espectrais pioram'' não se confirma de forma simétrica nestes dados.
+Essa visão é complementar à Tabela~\ref{tab:results}: a acurácia média global esconde uma heterogeneidade espectral relevante para a aplicação.
 
 \begin{figure}[!t]
 \centering
@@ -235,15 +235,15 @@ Diferenças pontuais em classes raras são esperadas dada a baixa contagem absol
 \end{figure*}
 
 \subsection{Ablação: posições Bragg}
-Concatenar $\boldsymbol{\lambda}_{\mathrm{FBG}}$ às potências altera o ranking de forma desigual: MLP ($+0{,}029$ em acurácia CV), Random Forest ($+0{,}019$) e MQ ($+0{,}041$) melhoram; o SVM permanece quase neutro; o kNN piora ($-0{,}050$).
-A Fig.~\ref{fig:feat} resume essa comparação lado a lado.
-Interpretamos o prejuízo do kNN como sensibilidade à mudança de escala/dimensionalidade sob distância euclidiana.
+Concatenar $\boldsymbol{\lambda}_{\mathrm{FBG}}$ às potências altera o ranking de forma desigual: MLP ($+0{,}029$ em acurácia CV), Random Forest ($+0{,}019$) e MQ ($+0{,}041$) melhoram; o SVM permanece quase neutro ($-0{,}001$); o kNN piora ($-0{,}050$).
+A Fig.~\ref{fig:feat} resume essa comparação lado a lado; o AdaBoost foi omitido porque a ablação foi executada antes do reajuste de hiperparâmetros descrito na metodologia, e o resultado antigo não seria comparável.
+Interpretamos o prejuízo do kNN como sensibilidade à mudança de escala e de dimensionalidade sob distância euclidiana.
 Para o MQ, as posições adicionam informação linearmente útil que as potências sozinhas não carregam de modo suficiente; para o SVM RBF, as potências já induzem uma margem competitiva sem as coordenadas Bragg.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{passo5_compare_features.png}
-\caption{Acurácia CV: somente potências versus potências concatenadas às posições Bragg.}
+\caption{Acurácia CV: somente potências versus potências concatenadas às posições Bragg (AdaBoost omitido; ver texto).}
 \label{fig:feat}
 \end{figure}
 
@@ -252,14 +252,14 @@ Para o MQ, as posições adicionam informação linearmente útil que as potênc
 Formalizar a seleção de FBGs como dez classes alinha o problema à avaliação clássica de reconhecimento de padrões e torna explícito o conjunto de decisões~\cite{Hastie2009ESL}.
 Em relação à regressão de~\cite{Barino2025TIM}, o classificador atua como estágio anterior: se $C_s$ for predito corretamente, um estimador de $\lambda_{res}$ pode operar apenas sobre quatro canais, potencialmente reduzindo ruído de FBGs irrelevantes --- hipótese ainda não medida em RMSE.
 
-Do ponto de vista de engenharia de sensores, a cascata classificação$\to$regressão também facilita diagnóstico: falhas de demodulação podem ser atribuídas à janela errada (Fig.~\ref{fig:cm}) ou à estimação contínua dentro da janela correta.
-Além disso, um classificador raso (SVM/RF) é barato de retreinar quando o array FBG é recalibrado, enquanto o modelo de autoatenção de~\cite{Barino2025TIM} permanece responsável pela precisão submetrica de $\lambda_{res}$.
+Do ponto de vista de engenharia de sensores, a cascata classificação$\to$regressão também facilita diagnóstico: falhas de demodulação podem ser atribuídas à escolha da janela errada (Fig.~\ref{fig:cm}) ou à estimação contínua dentro da janela correta.
+Além disso, um classificador raso (SVM/RF) é barato de retreinar quando o array FBG é recalibrado, enquanto o modelo de autoatenção de~\cite{Barino2025TIM} permanece responsável pela precisão subnanométrica de $\lambda_{res}$.
 
 O desempenho de SVM/RF ($0{,}938$ no hold-out) indica que a etapa de janela é tratável com modelos clássicos.
 Por outro lado, o desbalanceamento (Tabela~\ref{tab:balance}) e a otimização por acurácia favorecem classes majoritárias: estratégias futuras incluem scorer macro-F1, reamostragem ou custos assimétricos, sobretudo para $C_3$ e $C_9$.
 Confusões adjacentes, embora preferíveis a erros longos, ainda podem deslocar a estimação de $\lambda_{res}$ em frações de nanômetro se a regressão for sensível ao canal excluído/incluído indevidamente.
 
-Limitações: (i)~não quantificamos o ganho de RMSE ao fixar a janela antes da regressão; (ii)~o protocolo usa um único hold-out (além da CV), suficiente para o escopo da disciplina, porém sensível à partição; (iii)~não exploramos modelos profundos na classificação, propositalmente, para isolar o ganho da formulação multiclasse; (iv)~a Lorentziana da Fig.~\ref{fig:schema} é ilustrativa, não um espectro medido.
+Limitações: (i)~não quantificamos o ganho de RMSE ao fixar a janela antes da regressão; (ii)~o protocolo usa um único hold-out (além da CV), suficiente para o escopo deste estudo, porém sensível à partição; (iii)~não exploramos modelos profundos na classificação, propositalmente, para isolar o ganho da formulação multiclasse; (iv)~a curva Lorentziana da Fig.~\ref{fig:schema} é ilustrativa, não um espectro medido.
 
 \section{Conclusão}
 
